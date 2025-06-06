@@ -3,6 +3,7 @@ module.exports = {
     content: [
       "./src/**/*.{js,ts,jsx,tsx}",
       "./components/**/*.{js,ts,jsx,tsx}",  //  Add this line if your components are in a separate folder
+        "*.{js,ts,jsx,tsx,mdx}"
     ],
     theme: {
       extend: {
@@ -15,4 +16,3 @@ module.exports = {
     },
     plugins: [],
   }
-  
