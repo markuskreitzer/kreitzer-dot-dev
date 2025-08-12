@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { siteConfig } from '@/lib/config'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: siteConfig.site.title,
+  description: siteConfig.site.description,
+  generator: 'Next.js',
 }
 
 export default function RootLayout({

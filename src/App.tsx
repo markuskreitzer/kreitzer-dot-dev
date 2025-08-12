@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Book, BookOpen, ChevronRight, Github, Linkedin, Mail, Twitter, User, Zap, Sun, Moon } from 'lucide-react';
-import { load } from 'js-yaml';
+import { Book, BookOpen, ChevronRight, Github, Linkedin, Mail, Twitter, User, Zap, Sun, Moon, MessageCircle } from 'lucide-react';
+import { siteConfig, getUserName, getUserDescription } from '@/lib/config';
+import { getAllPosts, BlogPost } from '@/lib/blogClient';
 
 // --- Helper Components ---
 
@@ -30,7 +31,7 @@ const AnimatedParagraph = ({ children, className }: { children: React.ReactNode,
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeInOut', delay: 0.2 } }}
         className={cn(
-            'text-lg sm:text-xl leading-relaxed max-w-2xl',
+            'text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto',
             className
         )}
     >
@@ -117,35 +118,22 @@ const ProjectCard = ({
 );
 
 // --- Page Components ---
-const HomePage = ({ isDarkMode, userName }: { isDarkMode: boolean, userName: string }) => {
-    // Dummy blog post data for the carousel
-    const blogPosts = [
-        {
-            title: "The Future of AI",
-            imageUrl: "https://placehold.co/400x300/EEE/31343C", // Replace with actual image URLs
-            link: "#",
-        },
-        {
-            title: "Web Development Trends",
-            imageUrl: "https://placehold.co/400x300/EEE/31343C",
-            link: "#",
-        },
-        {
-            title: "Data Science Explained",
-            imageUrl: "https://placehold.co/400x300/EEE/31343C",
-            link: "#",
-        },
-        {
-            title: "Mobile App Development",
-            imageUrl: "https://placehold.co/400x300/EEE/31343C",
-            link: "#",
-        },
-        {
-            title: "Cloud Computing Basics",
-            imageUrl: "https://placehold.co/400x300/EEE/31343C",
-            link: "#",
-        },
-    ];
+const HomePage = ({ isDarkMode, userName, onPostSelect }: { isDarkMode: boolean, userName: string, onPostSelect: (slug: string) => void }) => {
+    const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+
+    useEffect(() => {
+        const loadPosts = async () => {
+            try {
+                const posts = await getAllPosts();
+                // Get the latest 3 posts for the carousel
+                setBlogPosts(posts.slice(0, 3));
+            } catch (error) {
+                console.error('Error loading blog posts:', error);
+            }
+        };
+
+        loadPosts();
+    }, []);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [isAtEnd, setIsAtEnd] = useState(false);
@@ -163,14 +151,11 @@ const HomePage = ({ isDarkMode, userName }: { isDarkMode: boolean, userName: str
     return (
         <div className="container mx-auto px-4 py-16 md:py-24">
             <div className="text-center">
-                <AnimatedHeading className={isDarkMode ? "text-white bg-gradient-to-r from-brass-600 to-brass-800 text-transparent bg-clip-text" : "text-gray-900"}>
-                    Hi, I&apos;m <span className={isDarkMode ? "text-transparent bg-clip-text bg-gradient-to-r from-brass-600 to-brass-800" : "text-blue-600"}>{userName}</span>
+                <AnimatedHeading className={isDarkMode ? "text-foreground" : "text-foreground"}>
+                    Hi, I&apos;m <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">{userName}</span>
                 </AnimatedHeading>
-                <AnimatedParagraph className={isDarkMode ? "text-beige-200" : "text-gray-700"}>
-                    I&apos;m a passionate <span className={isDarkMode ? "text-blue-400" : "text-blue-600"}>Software Engineer</span> specializing in building
-                    robust and scalable web applications.  I love turning complex problems into elegant,
-                    efficient code.  I'm particularly interested in <span className={isDarkMode ? "text-blue-400" : "text-purple-600"}>Full-Stack Development</span>,
-                    <span className="text-green-400">Cloud Technologies</span>, and <span className="text-yellow-400">Machine Learning</span>.
+                <AnimatedParagraph className="text-muted-foreground text-center">
+                    {getUserDescription()}
                 </AnimatedParagraph>
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
@@ -180,12 +165,7 @@ const HomePage = ({ isDarkMode, userName }: { isDarkMode: boolean, userName: str
                     <Button
                         variant="outline"
                         size="lg"
-                        className={cn(
-                            "transition-all duration-300 shadow-lg",
-                            isDarkMode
-                                ? "bg-gradient-to-r from-brass-500/20 to-brass-700/20 text-white border border-white/10 hover:from-brass-500/30 hover:to-brass-700/30 hover:scale-105"
-                                : "bg-gray-100 text-gray-900 border border-gray-200 hover:bg-gray-200 hover:scale-105"
-                        )}
+                        className="transition-all duration-300 hover:scale-105 bg-gradient-to-r from-brand-primary to-brand-secondary text-white border-0 hover:opacity-90"
                     >
                         <User className="mr-2 h-5 w-5" />
                         About Me
@@ -193,12 +173,7 @@ const HomePage = ({ isDarkMode, userName }: { isDarkMode: boolean, userName: str
                     <Button
                         variant="outline"
                         size="lg"
-                        className={cn(
-                            "transition-all duration-300 shadow-lg",
-                            isDarkMode
-                                ? "bg-gradient-to-r from-brass-700/20 to-brass-500/20 text-white border border-white/10 hover:from-brass-700/30 hover:to-brass-500/30 hover:scale-105"
-                                : "bg-gray-100 text-gray-900 border border-gray-200 hover:bg-gray-200 hover:scale-105"
-                        )}
+                        className="transition-all duration-300 hover:scale-105 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white"
                     >
                         <BookOpen className="mr-2 h-5 w-5" />
                         My Work
@@ -207,10 +182,7 @@ const HomePage = ({ isDarkMode, userName }: { isDarkMode: boolean, userName: str
 
                 {/* Blog Posts Carousel */}
                 <div className="mt-12">
-                    <h2 className={cn(
-                        "text-2xl font-semibold mb-6 text-center",
-                        isDarkMode ? "text-white" : "text-gray-900"
-                    )}>
+                    <h2 className="text-2xl font-semibold mb-6 text-center text-foreground">
                         Latest from My Blog
                     </h2>
                     <div
@@ -233,24 +205,24 @@ const HomePage = ({ isDarkMode, userName }: { isDarkMode: boolean, userName: str
                             </div>
                         )}
                         {blogPosts.map((post, index) => (
-                            <div key={index} className="flex-shrink-0 w-[80%] sm:w-[60%] md:w-[40%] lg:w-[30%]">
-                                <a href={post.link} className="block">
-                                    <Card className={cn(
-                                        "transition-all duration-300",
-                                        isDarkMode ? "bg-white/5 backdrop-blur-lg border border-white/10 shadow-lg hover:shadow-xl" : "bg-white shadow-md hover:shadow-lg border border-gray-200"
-                                    )}>
-                                        <img
-                                            src={post.imageUrl}
-                                            alt={post.title}
-                                            className="w-full h-48 object-cover rounded-t-lg"
-                                        />
+                            <div key={post.slug} className="flex-shrink-0 w-[80%] sm:w-[60%] md:w-[40%] lg:w-[30%]">
+                                <div onClick={() => onPostSelect(post.slug)} className="block cursor-pointer">
+                                    <Card className="transition-all duration-300 hover:shadow-lg">
+                                        <div className="w-full h-48 bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 rounded-t-lg flex items-center justify-center">
+                                            <div className="text-center p-4">
+                                                <BookOpen className="w-12 h-12 mx-auto mb-2 text-brand-primary" />
+                                                <div className="text-xs text-muted-foreground">
+                                                    {post.tags[0] || 'Blog Post'}
+                                                </div>
+                                            </div>
+                                        </div>
                                         <CardHeader>
-                                            <CardTitle className={isDarkMode ? "text-lg font-semibold text-white" : "text-lg font-semibold text-gray-900"}>
+                                            <CardTitle className="text-lg font-semibold text-card-foreground">
                                                 {post.title}
                                             </CardTitle>
                                         </CardHeader>
                                     </Card>
-                                </a>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -262,67 +234,68 @@ const HomePage = ({ isDarkMode, userName }: { isDarkMode: boolean, userName: str
                     className="mt-12 flex justify-center gap-6"
                 >
                     <AnimatedLink
-                        href="https://github.com/yourusername"
+                        href={siteConfig.contact.github}
                         icon={Github}
-                        className={isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}
+                        className="text-muted-foreground hover:text-brand-primary"
                     />
                     <AnimatedLink
-                        href="https://linkedin.com/in/yourprofile"
+                        href={siteConfig.contact.linkedin}
                         icon={Linkedin}
-                        className={isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}
+                        className="text-muted-foreground hover:text-brand-primary"
                     />
-                    <AnimatedLink
-                        href="https://twitter.com/yourhandle"
-                        icon={Twitter}
-                        className={isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}
-                    />
-                    <AnimatedLink
-                        href="mailto:your.email@example.com"
-                        icon={Mail}
-                        className={isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}
-                    />
+                    {siteConfig.contact.twitter && (
+                        <AnimatedLink
+                            href={siteConfig.contact.twitter}
+                            icon={Twitter}
+                            className="text-muted-foreground hover:text-brand-primary"
+                        />
+                    )}
+                    {siteConfig.contact.email && (
+                        <AnimatedLink
+                            href={`mailto:${siteConfig.contact.email}`}
+                            icon={Mail}
+                            className="text-muted-foreground hover:text-brand-primary"
+                        />
+                    )}
                 </motion.div>
             </div>
         </div>
     );
 };
 
-const BlogPage = ({ isDarkMode }: { isDarkMode: boolean }) => {
-    // Dummy blog posts data
-    const blogPosts = [
-        {
-            title: 'The Beauty of Clean Code',
-            description: 'Exploring the principles of writing maintainable and readable code.',
-            date: '2024-07-28',
-            link: '#',
-            tags: ['Coding', 'Clean Code', 'Software Development']
-        },
-        {
-            title: 'Mastering React Hooks',
-            description: 'A deep dive into React Hooks and how to use them effectively.',
-            date: '2024-07-25',
-            link: '#',
-            tags: ['React', 'Hooks', 'Frontend']
-        },
-        {
-            title: 'Building Scalable APIs with Node.js',
-            description: 'Learn how to design and build scalable and performant APIs using Node.js.',
-            date: '2024-07-21',
-            link: '#',
-            tags: ['Node.js', 'API', 'Backend', 'Scalability']
-        },
-        {
-            title: 'Introduction to Machine Learning',
-            description: 'A gentle introduction to the world of Machine Learning.',
-            date: '2024-07-18',
-            link: '#',
-            tags: ['Machine Learning', 'AI', 'Data Science']
-        },
-    ];
+const BlogPage = ({ isDarkMode, onPostSelect }: { isDarkMode: boolean, onPostSelect: (slug: string) => void }) => {
+    const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadPosts = async () => {
+            try {
+                const posts = await getAllPosts();
+                setBlogPosts(posts);
+            } catch (error) {
+                console.error('Error loading blog posts:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadPosts();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="container mx-auto px-4 py-16 md:py-24">
+                <AnimatedHeading className="text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">
+                    My Blog
+                </AnimatedHeading>
+                <div className="text-center text-muted-foreground">Loading posts...</div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto px-4 py-16 md:py-24">
-            <AnimatedHeading className={cn("text-center mb-12", isDarkMode ? "text-white bg-gradient-to-r from-brass-600 to-brass-800 text-transparent bg-clip-text" : "text-gray-900")}>
+            <AnimatedHeading className="text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">
                 My Blog
             </AnimatedHeading>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -332,30 +305,37 @@ const BlogPage = ({ isDarkMode }: { isDarkMode: boolean }) => {
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeInOut', delay: 0.2 + index * 0.1 } }}
                     >
-                        <Card className={cn(
-                            "transition-all duration-300",
-                            isDarkMode ? "bg-white/5 backdrop-blur-lg border border-white/10 shadow-lg hover:shadow-xl" : "bg-white shadow-md hover:shadow-lg border border-gray-200"
-                        )}>
+                        <Card className="transition-all duration-300 hover:shadow-lg">
                             <CardHeader>
-                                <CardTitle className={isDarkMode ? "text-xl font-semibold text-white" : "text-xl font-semibold text-gray-900"}>{post.title}</CardTitle>
-                                <CardDescription className={isDarkMode ? "text-gray-400" : "text-gray-500"}>{post.date}</CardDescription>
+                                <CardTitle className="text-xl font-semibold text-card-foreground">{post.title}</CardTitle>
+                                <CardDescription className="text-muted-foreground">
+                                    {new Date(post.date).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <p className={isDarkMode ? "text-gray-300 mb-4" : "text-gray-700 mb-4"}>{post.description}</p>
+                                <p className="text-muted-foreground mb-4">{post.description}</p>
                                 <div className="mb-4">
                                     {post.tags.map((tag, index) => (
                                         <Badge
                                             key={index}
                                             variant="secondary"
-                                            className={isDarkMode ? "bg-brass-500/20 text-brass-300 border-brass-500/30 mr-2" : "bg-gray-200 text-gray-700 border-gray-300 mr-2"}
+                                            className="mr-2"
                                         >
                                             {tag}
                                         </Badge>
                                     ))}
                                 </div>
-                                <AnimatedLink href={post.link} className={isDarkMode ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-800"}>
-                                    Read More <ChevronRight className="w-4 h-4" />
-                                </AnimatedLink>
+                                <Button 
+                                    variant="ghost" 
+                                    onClick={() => onPostSelect(post.slug)}
+                                    className="text-brand-primary hover:text-brand-secondary p-0 h-auto"
+                                >
+                                    Read More <ChevronRight className="w-4 h-4 ml-1" />
+                                </Button>
                             </CardContent>
                         </Card>
                     </motion.div>
@@ -365,24 +345,140 @@ const BlogPage = ({ isDarkMode }: { isDarkMode: boolean }) => {
     );
 };
 
+const BlogPostView = ({ slug, onBack }: { slug: string; onBack: () => void }) => {
+    const [post, setPost] = useState<BlogPost | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadPost = async () => {
+            try {
+                // Since we're in client-side, we'll need to fetch from our static data
+                const allPosts = await getAllPosts();
+                const foundPost = allPosts.find(p => p.slug === slug);
+                if (foundPost) {
+                    setPost(foundPost);
+                } else {
+                    console.error('Post not found:', slug);
+                }
+            } catch (error) {
+                console.error('Error loading blog post:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadPost();
+    }, [slug]);
+
+    if (loading) {
+        return (
+            <div className="container mx-auto px-4 py-16 md:py-24">
+                <div className="text-center text-muted-foreground">Loading post...</div>
+            </div>
+        );
+    }
+
+    if (!post) {
+        return (
+            <div className="container mx-auto px-4 py-16 md:py-24">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-foreground mb-4">Post Not Found</h1>
+                    <p className="text-muted-foreground mb-6">The requested blog post could not be found.</p>
+                    <Button onClick={onBack} variant="outline">
+                        ← Back to Blog
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="container mx-auto px-4 py-16 max-w-4xl">
+            {/* Post Header */}
+            <header className="mb-8">
+                <Button 
+                    onClick={onBack} 
+                    variant="ghost" 
+                    className="mb-6 text-brand-primary hover:text-brand-secondary"
+                >
+                    ← Back to Blog
+                </Button>
+                <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
+                    {post.title}
+                </h1>
+                <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6">
+                    <time dateTime={post.date}>
+                        {new Date(post.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}
+                    </time>
+                    <span>•</span>
+                    <div className="flex flex-wrap gap-2">
+                        {post.tags.map((tag, index) => (
+                            <Badge
+                                key={index}
+                                variant="secondary"
+                                className="text-xs"
+                            >
+                                {tag}
+                            </Badge>
+                        ))}
+                    </div>
+                </div>
+                {post.description && (
+                    <p className="text-xl text-muted-foreground leading-relaxed">
+                        {post.description}
+                    </p>
+                )}
+            </header>
+
+            {/* Post Content Preview */}
+            <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-strong:text-foreground">
+                <p className="text-muted-foreground italic">
+                    This is a preview of the blog post. In a full implementation, the complete markdown content would be rendered here.
+                </p>
+                <p className="text-muted-foreground">
+                    To implement full blog post rendering, you would need to:
+                </p>
+                <ul className="text-muted-foreground">
+                    <li>Set up an API route to serve markdown content</li>
+                    <li>Process the markdown to HTML on the server</li>
+                    <li>Render the HTML content safely</li>
+                </ul>
+            </div>
+        </div>
+    );
+};
+
 // --- Main App Component ---
 
-// Define custom color variables (in hex)
-const beige = '#F5F5DC';  // Beige
-const brass = '#B5A642';  // Brass
-const blue = '#0000FF';    // Blue
+// Brand colors matching chat app
+const brandColors = {
+  primary: '#ea580c',   // orange-600
+  secondary: '#dc2626', // red-600
+};
 
 
 const App = () => {
     const [activeTab, setActiveTab] = useState<'home' | 'blog'>('home');
     const [isDarkMode, setIsDarkMode] = useState(true); // Start with dark mode
-    const [userName, setUserName] = useState<string>('Your Name'); // Default value
+    const [userName, setUserName] = useState<string>(getUserName());
+    const [selectedPost, setSelectedPost] = useState<string | null>(null);
     const prefersDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
 
     // Function to handle tab changes
     const handleTabChange = useCallback((tab: 'home' | 'blog') => {
         setActiveTab(tab);
+        setSelectedPost(null); // Clear selected post when changing tabs
+    }, []);
+
+    // Function to handle blog post selection
+    const handlePostSelect = useCallback((slug: string) => {
+        setSelectedPost(slug);
+        setActiveTab('blog');
     }, []);
 
     const toggleDarkMode = () => {
@@ -399,6 +495,12 @@ const App = () => {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+            // Apply dark class to document element
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         }
     }, [isDarkMode]);
 
@@ -406,60 +508,33 @@ const App = () => {
         if (typeof window !== 'undefined') {
             const storedDarkMode = localStorage.getItem('darkMode');
             if (storedDarkMode) {
-                setIsDarkMode(JSON.parse(storedDarkMode));
+                const darkModeValue = JSON.parse(storedDarkMode);
+                setIsDarkMode(darkModeValue);
+                // Apply dark class immediately on load
+                if (darkModeValue) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
             }
         }
     }, []);
 
-    // Load data from YAML file
+    // Set user name from configuration
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Use a raw fetch instead of next/server functions
-                const response = await fetch('/data/config.yaml'); // Assumes config.yaml is in the public directory
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch config.yaml: ${response.status}`);
-                }
-                const text = await response.text();
-                const config = load(text) as { name: string }; // Type assertion
-                setUserName(config.name);
-            } catch (error) {
-                console.error("Error loading config.yaml:", error);
-                // Handle error (e.g., set default value, show error message)
-            }
-        };
-
-        fetchData();
+        setUserName(getUserName());
     }, []);
 
 
 
     return (
-        <div className={cn(
-            "min-h-screen font-sans transition-colors duration-500",
-            isDarkMode
-                ? "bg-gradient-to-br from-gray-900 via-brass-900 to-black text-white"
-                : "bg-gradient-to-br from-gray-50 to-gray-100 to-white text-gray-900"
-        )}
-            style={{
-                '--beige': beige,
-                '--brass': brass,
-                '--blue': blue,
-            }}
+        <div className="min-h-screen font-sans bg-background text-foreground"
         >
             {/* Navbar */}
-            <nav className={cn(
-                "py-4 transition-colors duration-500",
-                isDarkMode ? "bg-white/5 backdrop-blur-lg border-b border-white/10" : "bg-white border-b border-gray-200"
-            )}>
+            <nav className="py-4 bg-card border-b border-border">
                 <div className="container mx-auto px-4 flex justify-between items-center">
                     <div
-                        className={cn(
-                            "text-2xl font-bold cursor-pointer transition-colors duration-500",
-                            isDarkMode
-                                ? "text-transparent bg-clip-text bg-gradient-to-r from-brass-600 to-brass-800"
-                                : "text-gray-900"
-                        )}
+                        className="text-2xl font-bold cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary"
                         onClick={() => handleTabChange('home')}
                     >
                         {userName}
@@ -468,11 +543,8 @@ const App = () => {
                         <Button
                             variant="ghost"
                             className={cn(
-                                'transition-colors duration-300',
-                                isDarkMode
-                                    ? 'text-gray-300 hover:text-white hover:bg-white/10'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
-                                activeTab === 'home' && (isDarkMode ? 'text-white border-b-2 border-blue-400' : 'text-gray-900 border-b-2 border-blue-600')
+                                'transition-colors duration-300 text-muted-foreground hover:text-foreground hover:bg-accent',
+                                activeTab === 'home' && 'text-foreground border-b-2 border-brand-primary'
                             )}
                             onClick={() => handleTabChange('home')}
                         >
@@ -481,11 +553,8 @@ const App = () => {
                         <Button
                             variant="ghost"
                             className={cn(
-                                'transition-colors duration-300',
-                                isDarkMode
-                                    ? 'text-gray-300 hover:text-white hover:bg-white/10'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
-                                activeTab === 'blog' && (isDarkMode ? 'text-white border-b-2 border-blue-400' : 'text-gray-900 border-b-2 border-blue-600')
+                                'transition-colors duration-300 text-muted-foreground hover:text-foreground hover:bg-accent',
+                                activeTab === 'blog' && 'text-foreground border-b-2 border-brand-primary'
                             )}
                             onClick={() => handleTabChange('blog')}
                         >
@@ -493,11 +562,16 @@ const App = () => {
                         </Button>
                         <Button
                             variant="ghost"
+                            className="transition-colors duration-300 text-muted-foreground hover:text-foreground hover:bg-accent"
+                            onClick={() => window.open(siteConfig.site.chatUrl, '_blank')}
+                        >
+                            <MessageCircle className="h-5 w-5 mr-2" />
+                            Chat
+                        </Button>
+                        <Button
+                            variant="ghost"
                             onClick={toggleDarkMode}
-                            className={cn(
-                                "transition-colors duration-300",
-                                isDarkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                            )}
+                            className="transition-colors duration-300 text-muted-foreground hover:text-foreground"
                         >
                             {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                         </Button>
@@ -514,31 +588,38 @@ const App = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
-                        <HomePage isDarkMode={isDarkMode} userName={userName} />
+                        <HomePage isDarkMode={isDarkMode} userName={userName} onPostSelect={handlePostSelect} />
                     </motion.div>
                 )}
-                {activeTab === 'blog' && (
+                {activeTab === 'blog' && !selectedPost && (
                     <motion.div
                         key="blog"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
-                        <BlogPage isDarkMode={isDarkMode} />
+                        <BlogPage isDarkMode={isDarkMode} onPostSelect={handlePostSelect} />
+                    </motion.div>
+                )}
+                {activeTab === 'blog' && selectedPost && (
+                    <motion.div
+                        key="blog-post"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <BlogPostView slug={selectedPost} onBack={() => setSelectedPost(null)} />
                     </motion.div>
                 )}
             </AnimatePresence>
 
             {/* Footer */}
-            <footer className={cn(
-                "py-6 mt-12 transition-colors duration-500",
-                isDarkMode ? "bg-white/5 backdrop-blur-lg border-t border-white/10" : "bg-gray-100 border-t border-gray-200"
-            )}>
+            <footer className="py-6 mt-12 bg-card border-t border-border">
                 <div className="container mx-auto px-4 text-center">
-                    <p className={isDarkMode ? "text-gray-400" : "text-gray-600"}>
+                    <p className="text-muted-foreground">
                         &copy; {new Date().getFullYear()} {userName}. All rights reserved.
                     </p>
-                    <div className='mt-2' style={{ color: isDarkMode ? beige : 'inherit' }}>
+                    <div className='mt-2 text-muted-foreground'>
                         <Zap className='inline-block w-4 h-4 mr-1' />
                         Designed & Built by {userName}
                     </div>
