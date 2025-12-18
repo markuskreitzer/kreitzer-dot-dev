@@ -3,6 +3,9 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import math from 'remark-math';
+import gfm from 'remark-gfm';
+import { visit } from 'unist-util-visit';
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
@@ -80,8 +83,21 @@ export async function getPost(slug: string): Promise<BlogPost | null> {
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const matterResult = matter(fileContents);
 
-  // Process markdown content to HTML
+  // Process mermaid code blocks to placeholders for client-side rendering
+  const processMermaidBlocks = () => (tree: any) => {
+    visit(tree, 'code', (node) => {
+      if (node.lang === 'mermaid') {
+        node.type = 'html';
+        node.value = `<div class="mermaid-placeholder" data-mermaid="${encodeURIComponent(node.value)}"></div>`;
+      }
+    });
+  };
+
+  // Process markdown content to HTML with math and mermaid support
   const processedContent = await remark()
+    .use(gfm) // GitHub-flavored markdown
+    .use(math) // LaTeX math support
+    .use(processMermaidBlocks) // Custom mermaid processing
     .use(html, { sanitize: false })
     .process(matterResult.content);
   
