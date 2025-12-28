@@ -8,8 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { BookOpen, ChevronRight, Github, Linkedin, Mail, Twitter, MessageCircle, Sun, Moon, User } from 'lucide-react';
 import { siteConfig, getUserName, getUserDescription } from '@/lib/config';
-import { getAllPosts, getPost, BlogPost } from '@/lib/blogClient';
-import { BlogContent } from '@/components/BlogContent';
+import { getAllPosts, BlogPost } from '@/lib/blogClient';
+import { useRouter } from 'next/navigation';
 
 // Helper Components
 const AnimatedHeading = ({ children, className }: { children: React.ReactNode, className?: string }) => (
@@ -62,12 +62,12 @@ const AnimatedLink = ({
 
 
 // Page Components
-const HomePage = ({ isDarkMode, userName, onPostSelect }: {
+const HomePage = ({ isDarkMode, userName }: {
   isDarkMode: boolean;
   userName: string;
-  onPostSelect: (slug: string) => void;
 }) => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const loadPosts = async () => {
@@ -115,7 +115,7 @@ const HomePage = ({ isDarkMode, userName, onPostSelect }: {
               <Card
                 key={post.slug}
                 className="transition-all duration-300 hover:shadow-lg cursor-pointer"
-                onClick={() => onPostSelect(post.slug)}
+                onClick={() => router.push(`/blog/${post.slug}`)}
               >
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold">{post.title}</CardTitle>
@@ -157,11 +157,10 @@ const HomePage = ({ isDarkMode, userName, onPostSelect }: {
   );
 };
 
-const BlogPage = ({ onPostSelect }: {
-  onPostSelect: (slug: string) => void;
-}) => {
+const BlogPage = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const loadPosts = async () => {
@@ -197,7 +196,7 @@ const BlogPage = ({ onPostSelect }: {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeInOut', delay: 0.2 + index * 0.1 } }}
           >
-            <Card className="transition-all duration-300 hover:shadow-lg cursor-pointer" onClick={() => onPostSelect(post.slug)}>
+            <Card className="transition-all duration-300 hover:shadow-lg cursor-pointer" onClick={() => router.push(`/blog/${post.slug}`)}>
               <CardHeader>
                 <CardTitle className="text-xl font-semibold">{post.title}</CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -229,101 +228,15 @@ const BlogPage = ({ onPostSelect }: {
   );
 };
 
-const BlogPostView = ({ slug, onBack }: { slug: string; onBack: () => void }) => {
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadPost = async () => {
-      try {
-        const foundPost = await getPost(slug);
-        if (foundPost) {
-          setPost(foundPost);
-        }
-      } catch (error) {
-        console.error('Error loading blog post:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadPost();
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-16 md:py-24">
-        <div className="text-center text-muted-foreground">Loading post...</div>
-      </div>
-    );
-  }
-
-  if (!post) {
-    return (
-      <div className="container mx-auto px-4 py-16 md:py-24">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Post Not Found</h1>
-          <p className="text-muted-foreground mb-6">The requested blog post could not be found.</p>
-          <Button onClick={onBack} variant="outline">
-            ← Back to Blog
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-16 max-w-4xl">
-      <header className="mb-8">
-        <Button onClick={onBack} variant="ghost" className="mb-6">
-          ← Back to Blog
-        </Button>
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">{post.title}</h1>
-        <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6">
-          <time dateTime={post.date}>
-            {new Date(post.date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </time>
-          <span>•</span>
-          <div className="flex flex-wrap gap-2">
-            {post.tags.map((tag, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        </div>
-        {post.description && (
-          <p className="text-xl text-muted-foreground leading-relaxed">
-            {post.description}
-          </p>
-        )}
-      </header>
-
-       <div className="prose prose-lg max-w-none dark:prose-invert">
-         <BlogContent content={post.content || ''} />
-       </div>
-    </div>
-  );
-};
 
 // Main App Component
 const App = () => {
   const [activeTab, setActiveTab] = useState<'home' | 'blog'>('home');
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [userName, setUserName] = useState<string>(getUserName());
-  const [selectedPost, setSelectedPost] = useState<string | null>(null);
 
   const handleTabChange = useCallback((tab: 'home' | 'blog') => {
     setActiveTab(tab);
-    setSelectedPost(null);
-  }, []);
-
-  const handlePostSelect = useCallback((slug: string) => {
-    setSelectedPost(slug);
-    setActiveTab('blog');
   }, []);
 
   const toggleDarkMode = () => {
@@ -402,27 +315,17 @@ const App = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <HomePage isDarkMode={isDarkMode} userName={userName} onPostSelect={handlePostSelect} />
+            <HomePage isDarkMode={isDarkMode} userName={userName} />
           </motion.div>
         )}
-        {activeTab === 'blog' && !selectedPost && (
+        {activeTab === 'blog' && (
           <motion.div
             key="blog"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <BlogPage onPostSelect={handlePostSelect} />
-          </motion.div>
-        )}
-        {activeTab === 'blog' && selectedPost && (
-          <motion.div
-            key="blog-post"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <BlogPostView slug={selectedPost} onBack={() => setSelectedPost(null)} />
+            <BlogPage />
           </motion.div>
         )}
       </AnimatePresence>
