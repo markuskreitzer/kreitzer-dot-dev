@@ -10,6 +10,7 @@ import { BookOpen, ChevronRight, Github, Linkedin, Mail, Twitter, MessageCircle,
 import { siteConfig, getUserName, getUserDescription } from '@/lib/config';
 import { getAllPosts, BlogPost } from '@/lib/blogClient';
 import { useRouter } from 'next/navigation';
+import { MobileMenu } from '@/components/MobileMenu';
 
 // Helper Components
 const AnimatedHeading = ({ children, className }: { children: React.ReactNode, className?: string }) => (
@@ -95,11 +96,21 @@ const HomePage = ({ isDarkMode, userName }: {
           animate={{ opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeInOut', delay: 0.4 } }}
           className="mt-8 flex flex-col sm:flex-row justify-center gap-4"
         >
-          <Button variant="outline" size="lg" className="transition-all duration-300 hover:scale-105">
+          <Button
+            variant="outline"
+            size="lg"
+            className="transition-all duration-300 hover:scale-105"
+            onClick={() => router.push('/about')}
+          >
             <User className="mr-2 h-5 w-5" />
             About Me
           </Button>
-          <Button variant="outline" size="lg" className="transition-all duration-300 hover:scale-105">
+          <Button
+            variant="outline"
+            size="lg"
+            className="transition-all duration-300 hover:scale-105"
+            onClick={() => router.push('/work')}
+          >
             <BookOpen className="mr-2 h-5 w-5" />
             My Work
           </Button>
@@ -271,7 +282,9 @@ const App = () => {
           <div className="text-2xl font-bold cursor-pointer" onClick={() => handleTabChange('home')}>
             {userName}
           </div>
-          <div className="flex gap-6 items-center">
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex gap-6 items-center">
             <Button
               variant="ghost"
               className={cn(
@@ -302,6 +315,14 @@ const App = () => {
             <Button variant="ghost" onClick={toggleDarkMode}>
               {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
+          </div>
+
+          {/* Mobile Navigation */}
+          <div className="flex md:hidden gap-2 items-center">
+            <Button variant="ghost" onClick={toggleDarkMode}>
+              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+            <MobileMenu />
           </div>
         </div>
       </nav>

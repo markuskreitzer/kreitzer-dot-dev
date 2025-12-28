@@ -52,6 +52,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={`${siteConfig.site.title} RSS Feed`}
+          href={`${siteConfig.site.url}/feed.xml`}
+        />
+        {/* Analytics Placeholder - See lib/analytics.ts for setup instructions */}
+        {/* Uncomment and configure your preferred analytics solution */}
+      </head>
       <body>{children}</body>
     </html>
   )

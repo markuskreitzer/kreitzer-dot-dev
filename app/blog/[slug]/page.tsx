@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { BlogContent } from '@/components/BlogContent';
+import { ShareButtons } from '@/components/ShareButtons';
 import { siteConfig } from '@/lib/config';
+import { Clock } from 'lucide-react';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -138,7 +140,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <article className="container mx-auto px-4 py-16 max-w-4xl">
         <header className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">{post.title}</h1>
-          <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6">
+          <div className="flex flex-wrap items-center gap-3 text-muted-foreground mb-4">
             <time dateTime={post.date}>
               {new Date(post.date).toLocaleDateString('en-US', {
                 year: 'numeric',
@@ -146,24 +148,41 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 day: 'numeric'
               })}
             </time>
-            <span>•</span>
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            {post.readingTime && (
+              <>
+                <span>•</span>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-4 w-4" />
+                  <span>{post.readingTime}</span>
+                </div>
+              </>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {post.tags.map((tag, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
           </div>
           {post.description && (
-            <p className="text-xl text-muted-foreground leading-relaxed">
+            <p className="text-xl text-muted-foreground leading-relaxed mb-6">
               {post.description}
             </p>
           )}
+          <div className="pt-4 border-t border-border">
+            <ShareButtons title={post.title} slug={post.slug} />
+          </div>
         </header>
 
-        <div className="prose prose-lg max-w-none dark:prose-invert">
+        <div className="prose prose-lg max-w-none dark:prose-invert mb-12">
           <BlogContent content={post.content || ''} />
+        </div>
+
+        {/* Share buttons at bottom */}
+        <div className="border-t border-border pt-8">
+          <h3 className="text-lg font-semibold mb-4">Share this article</h3>
+          <ShareButtons title={post.title} slug={post.slug} />
         </div>
       </article>
 

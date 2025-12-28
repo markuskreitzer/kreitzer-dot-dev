@@ -6,6 +6,7 @@ import html from 'remark-html';
 import math from 'remark-math';
 import gfm from 'remark-gfm';
 import { visit } from 'unist-util-visit';
+import { calculateReadingTime } from './readingTime';
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
@@ -18,6 +19,7 @@ export interface BlogPost {
   published: boolean;
   content?: string;
   excerpt?: string;
+  readingTime?: string;
 }
 
 export interface BlogPostMetadata {
@@ -102,6 +104,7 @@ export async function getPost(slug: string): Promise<BlogPost | null> {
     .process(matterResult.content);
   
   const contentHtml = processedContent.toString();
+  const readingTime = calculateReadingTime(matterResult.content);
 
   return {
     slug,
@@ -112,6 +115,7 @@ export async function getPost(slug: string): Promise<BlogPost | null> {
     published: matterResult.data.published !== false,
     content: contentHtml,
     excerpt: matterResult.data.description,
+    readingTime,
   };
 }
 
