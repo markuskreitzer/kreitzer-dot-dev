@@ -1,0 +1,158 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "Markus Kreitzer" [ref=e5] [cursor=pointer]:
+          - /url: /
+        - link "← Back to Home" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - button "← Back to Home" [ref=e8]
+    - article [ref=e9]:
+      - generic [ref=e10]:
+        - 'heading "Mastering React Hooks: Best Practices for Modern React Development" [level=1] [ref=e11]'
+        - generic [ref=e12]:
+          - time [ref=e13]: January 1, 2025
+          - generic [ref=e14]: •
+          - generic [ref=e15]:
+            - generic [ref=e16]: React
+            - generic [ref=e17]: Hooks
+            - generic [ref=e18]: JavaScript
+            - generic [ref=e19]: Frontend
+            - generic [ref=e20]: Performance
+        - paragraph [ref=e21]: A comprehensive guide to React hooks with advanced patterns, performance optimization, and common pitfalls to avoid
+      - generic [ref=e22]:
+        - 'heading "Mastering React Hooks: Best Practices for Modern React Development" [level=1] [ref=e23]'
+        - paragraph [ref=e24]: React Hooks transformed React development by enabling stateful logic in functional components. Since their introduction in React 16.8, hooks have become the standard for React development. This comprehensive guide covers everything from basic usage to advanced patterns and performance optimization techniques for 2025.
+        - 'heading "React Hooks Evolution: 2019-2025" [level=2] [ref=e25]'
+        - heading "The Rules of Hooks" [level=2] [ref=e26]
+        - paragraph [ref=e27]: "Before diving deep, remember the two fundamental rules:"
+        - list [ref=e28]:
+          - listitem [ref=e29]:
+            - strong [ref=e30]: Only call hooks at the top level
+            - text: "- Never call hooks inside loops, conditions, or nested functions"
+          - listitem [ref=e31]:
+            - strong [ref=e32]: Only call hooks from React functions
+            - text: "- Call them from React function components or custom hooks"
+        - code [ref=e34]: "// ❌ Wrong - calling hooks conditionally function BadComponent({ condition }) { if (condition) { const [state, setState] = useState(''); // This violates the rules! } return <div />; } // ✅ Correct - hooks at top level function GoodComponent({ condition }) { const [state, setState] = useState(''); return condition ? <div>{state}</div> : null; }"
+        - heading "Essential Hooks Deep Dive" [level=2] [ref=e35]
+        - 'heading "useState: State Management" [level=3] [ref=e36]'
+        - paragraph [ref=e37]:
+          - code [ref=e38]: "`useState`"
+          - text: is the foundation of stateful components. It returns a stateful value and a function to update it.
+        - code [ref=e40]: "function Counter() { const [count, setCount] = useState<number>(0); const [user, setUser] = useState<User | null>(null); const increment = () => setCount(prev => prev + 1); // Functional updates prevent stale closure issues const asyncIncrement = () => { setCount(currentCount => currentCount + 1); }; return ( <div> <p>Count: {count}</p> <button onClick={increment}>Increment</button> </div> ); }"
+        - paragraph [ref=e41]:
+          - strong [ref=e42]: "Best Practices:"
+        - list [ref=e43]:
+          - listitem [ref=e44]: Use functional updates for state based on previous state
+          - listitem [ref=e45]: Type your state properly with TypeScript
+          - listitem [ref=e46]:
+            - text: Consider
+            - code [ref=e47]: "`useReducer`"
+            - text: for complex state logic
+        - 'heading "useEffect: Side Effects" [level=3] [ref=e48]'
+        - paragraph [ref=e49]:
+          - code [ref=e50]: "`useEffect`"
+          - text: handles side effects like data fetching, subscriptions, and DOM manipulation.
+        - code [ref=e52]:
+          - text: "function DataFetcher({ userId }: { userId: string }) { const [data, setData] = useState(null); const [loading, setLoading] = useState(true); const [error, setError] = useState(null); useEffect(() => { let isMounted = true; const fetchData = async () => { try { setLoading(true); const response = await fetch(`/api/user/"
+          - text: "{theme}`} onClick={() => console.log(`Theme is"
+          - text: "{userId}`); if (loading) return <div>Loading...</div>; if (error) return <div>Error: {error}</div>; if (!user) return <div>User not found</div>; return ( <div> <h1>{user.name}</h1> <p>{user.email}</p> </div> ); }"
+        - heading "Advanced Custom Hook Patterns" [level=3] [ref=e53]
+        - code [ref=e55]: "// Hook composition function useForm<T extends Record<string, any>>(initialValues: T) { const [values, setValues] = useState<T>(initialValues); const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({}); const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({}); const setValue = useCallback(<K extends keyof T>(field: K, value: T[K]) => { setValues(prev => ({ ...prev, [field]: value })); }, []); const setError = useCallback(<K extends keyof T>(field: K, error: string) => { setErrors(prev => ({ ...prev, [field]: error })); }, []); const setTouched = useCallback(<K extends keyof T>(field: K, isTouched = true) => { setTouched(prev => ({ ...prev, [field]: isTouched })); }, []); const reset = useCallback(() => { setValues(initialValues); setErrors({}); setTouched({}); }, [initialValues]); return { values, errors, touched, setValue, setError, setTouched, reset, }; } // Usage function LoginForm() { const { values, errors, setValue, setError } = useForm({ email: '', password: '', }); const handleSubmit = async (e: React.FormEvent) => { e.preventDefault(); // Validation logic... }; return ( <form onSubmit={handleSubmit}> <input type=\"email\" value={values.email} onChange={e => setValue('email', e.target.value)} /> {errors.email && <span>{errors.email}</span>} {/* ... */} </form> ); }"
+        - heading "Performance Optimization" [level=2] [ref=e56]
+        - heading "Avoiding Unnecessary Re-renders" [level=3] [ref=e57]
+        - code [ref=e59]: "function OptimizedList({ items }: { items: Item[] }) { // Memoize expensive operations const sortedItems = useMemo(() => [...items].sort((a, b) => a.name.localeCompare(b.name)), [items] ); // Memoize event handlers const handleItemClick = useCallback((item: Item) => { console.log('Item clicked:', item); }, []); return ( <ul> {sortedItems.map(item => ( <ListItem key={item.id} item={item} onClick={handleItemClick} /> ))} </ul> ); } // Memoize child components const ListItem = React.memo<ItemProps>(({ item, onClick }) => ( <li onClick={() => onClick(item)}> {item.name} </li> ));"
+        - heading "Modern React Hooks (React 18+ and 19)" [level=2] [ref=e60]
+        - 'heading "useTransition: Non-blocking UI Updates" [level=3] [ref=e61]'
+        - code [ref=e63]: "import { useTransition, useDeferredValue } from 'react'; function SearchComponent({ items }: { items: Item[] }) { const [query, setQuery] = useState(''); const [filteredItems, setFilteredItems] = useState(items); const [isPending, startTransition] = useTransition(); const deferredQuery = useDeferredValue(query); useEffect(() => { startTransition(() => { // This runs with lower priority const filtered = items.filter(item => item.name.toLowerCase().includes(deferredQuery.toLowerCase()) ); setFilteredItems(filtered); }); }, [deferredQuery, items]); return ( <div> <input value={query} onChange={e => setQuery(e.target.value)} placeholder=\"Search...\" /> {isPending && <div>Updating results...</div>} <ul> {filteredItems.map(item => ( <li key={item.id}>{item.name}</li> ))} </ul> </div> ); }"
+        - 'heading "useDeferredValue: Deferred Updates" [level=3] [ref=e64]'
+        - code [ref=e66]: "function SearchResults({ query, items }: { query: string; items: Item[] }) { const deferredQuery = useDeferredValue(query); const filteredItems = useMemo(() => { // Expensive filtering operation return items.filter(item => item.name.toLowerCase().includes(deferredQuery.toLowerCase()) ); }, [deferredQuery, items]); return ( <div> <p>Showing results for: {deferredQuery}</p> <ul> {filteredItems.map(item => <li key={item.id}>{item.name}</li>)} </ul> </div> ); }"
+        - heading "React 19 Hooks (2025)" [level=2] [ref=e67]
+        - 'heading "useOptimistic: Optimistic UI Updates" [level=3] [ref=e68]'
+        - code [ref=e70]: "import { useOptimistic } from 'react'; function TodoList({ todos, addTodo }) { const [optimisticTodos, addOptimisticTodo] = useOptimistic( todos, (state, newTodo) => [...state, { ...newTodo, sending: true }] ); const handleSubmit = async (formData) => { const newTodo = { id: Date.now(), text: formData.get('text') }; // Optimistically add to UI addOptimisticTodo(newTodo); try { await addTodo(newTodo); } catch (error) { // Error handling - optimistic update will be reverted console.error('Failed to add todo:', error); } }; return ( <div> <form action={handleSubmit}> <input name=\"text\" placeholder=\"Add new todo...\" /> <button type=\"submit\">Add</button> </form> <ul> {optimisticTodos.map(todo => ( <li key={todo.id} style={{ opacity: todo.sending ? 0.5 : 1 }}> {todo.text} </li> ))} </ul> </div> ); }"
+        - 'heading "useFormStatus: Form State Management" [level=3] [ref=e71]'
+        - code [ref=e73]: "import { useFormStatus } from 'react-dom'; function SubmitButton() { const { pending, data, method, action } = useFormStatus(); return ( <button type=\"submit\" disabled={pending} aria-disabled={pending} > {pending ? 'Submitting...' : 'Submit'} </button> ); } function ContactForm() { return ( <form action=\"/api/contact\"> <input name=\"name\" placeholder=\"Your name\" /> <input name=\"email\" placeholder=\"Your email\" /> <textarea name=\"message\" placeholder=\"Your message\"></textarea> <SubmitButton /> </form> ); }"
+        - heading "Hook Performance Flow 2025" [level=3] [ref=e74]
+        - heading "Testing Hooks" [level=2] [ref=e75]
+        - paragraph [ref=e76]: Hooks should be tested both in isolation and within components.
+        - code [ref=e78]: "// Custom hook testing import { renderHook, act } from '@testing-library/react'; test('useCounter increments correctly', () => { const { result } = renderHook(() => useCounter(0)); expect(result.current.count).toBe(0); act(() => { result.current.increment(); }); expect(result.current.count).toBe(1); }); // Component testing import { render, screen, fireEvent } from '@testing-library/react'; test('Counter component displays correct count', () => { render(<Counter />); expect(screen.getByText('Count: 0')).toBeInTheDocument(); fireEvent.click(screen.getByText('+')); expect(screen.getByText('Count: 1')).toBeInTheDocument(); });"
+        - heading "Common Mistakes and How to Avoid Them" [level=2] [ref=e79]
+        - list [ref=e80]:
+          - listitem [ref=e81]:
+            - strong [ref=e82]: Stale Closures
+            - text: ": Use functional updates with"
+            - code [ref=e83]: "`useState`"
+          - listitem [ref=e84]:
+            - strong [ref=e85]: Infinite Loops
+            - text: ": Always include all dependencies in"
+            - code [ref=e86]: "`useEffect`"
+          - listitem [ref=e87]:
+            - strong [ref=e88]: Memory Leaks
+            - text: ": Always clean up subscriptions and timers"
+          - listitem [ref=e89]:
+            - strong [ref=e90]: Unnecessary Re-renders
+            - text: ": Use"
+            - code [ref=e91]: "`useMemo`"
+            - text: and
+            - code [ref=e92]: "`useCallback`"
+            - text: judiciously
+          - listitem [ref=e93]:
+            - strong [ref=e94]: Race Conditions
+            - text: ": Use cleanup functions and loading states"
+        - 'heading "React Performance in 2025: Key Metrics" [level=2] [ref=e95]'
+        - heading "Best Practices for 2025" [level=2] [ref=e96]
+        - heading "1. Concurrent Rendering by Default" [level=3] [ref=e97]:
+          - text: "1."
+          - strong [ref=e98]: Concurrent Rendering by Default
+        - list [ref=e99]:
+          - listitem [ref=e100]: Use React 19's concurrent features
+          - listitem [ref=e101]: Implement proper loading states
+          - listitem [ref=e102]: Leverage startTransition for non-urgent updates
+        - heading "2. Server Components Integration" [level=3] [ref=e103]:
+          - text: "2."
+          - strong [ref=e104]: Server Components Integration
+        - list [ref=e105]:
+          - listitem [ref=e106]: Move non-interactive components to server
+          - listitem [ref=e107]: Reduce client-side JavaScript bundle
+          - listitem [ref=e108]: Improve initial page load performance
+        - heading "3. AI-Assisted Development" [level=3] [ref=e109]:
+          - text: "3."
+          - strong [ref=e110]: AI-Assisted Development
+        - list [ref=e111]:
+          - listitem [ref=e112]: Use AI tools to generate optimal hook patterns
+          - listitem [ref=e113]: Validate AI-generated code against best practices
+          - listitem [ref=e114]: Leverage AI for performance optimization suggestions
+        - heading "4. Bundle Optimization" [level=3] [ref=e115]:
+          - text: "4."
+          - strong [ref=e116]: Bundle Optimization
+        - list [ref=e117]:
+          - listitem [ref=e118]: Implement automatic code splitting
+          - listitem [ref=e119]: Use dynamic imports for large components
+          - listitem [ref=e120]: Optimize dependencies with tree shaking
+        - heading "5. Performance Budgeting" [level=3] [ref=e121]:
+          - text: "5."
+          - strong [ref=e122]: Performance Budgeting
+        - list [ref=e123]:
+          - listitem [ref=e124]: Set performance budgets in CI/CD
+          - listitem [ref=e125]: Monitor Core Web Vitals in production
+          - listitem [ref=e126]: Use performance regression testing
+        - heading "Conclusion" [level=2] [ref=e127]
+        - paragraph [ref=e128]: React hooks have revolutionized how we write React applications. They provide a more direct way to use React's features in functional components while maintaining the same performance benefits. As we move through 2025, mastering hooks requires understanding both the basic patterns and advanced optimization techniques.
+        - paragraph [ref=e129]: "The key to effective hook usage is:"
+        - list [ref=e130]:
+          - listitem [ref=e131]: Following the rules of hooks strictly
+          - listitem [ref=e132]: Understanding when to use each hook
+          - listitem [ref=e133]: Optimizing performance when necessary
+          - listitem [ref=e134]: Creating reusable custom hooks
+          - listitem [ref=e135]: Writing testable code
+          - listitem [ref=e136]: Leveraging React 19's new capabilities
+          - listitem [ref=e137]: Integrating with server components
+          - listitem [ref=e138]: Using AI tools responsibly
+        - paragraph [ref=e139]: With these practices, you'll be able to build more maintainable, performant, and scalable React applications that meet the demands of modern web development in 2025.
+    - contentinfo [ref=e140]:
+      - paragraph [ref=e142]: © 2025 Markus Kreitzer. All rights reserved.
+  - alert [ref=e143]
+```
