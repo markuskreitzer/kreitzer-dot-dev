@@ -1,11 +1,12 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { getPost } from '@/lib/blog';
+import { getPost, getAllPosts } from '@/lib/blog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { BlogContent } from '@/components/BlogContent';
+import { siteConfig } from '@/lib/config';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -23,23 +24,56 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     };
   }
 
+  const url = `${siteConfig.site.url}/blog/${slug}`;
+  const authorName = siteConfig.user.name;
+
   return {
-    title: post.title,
+    title: `${post.title} | ${siteConfig.site.title}`,
     description: post.description,
-    keywords: post.tags,
+    keywords: post.tags.join(', '),
+    authors: [{ name: authorName }],
+    creator: authorName,
+    publisher: authorName,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: post.title,
       description: post.description,
+      url,
+      siteName: siteConfig.site.title,
+      locale: 'en_US',
       type: 'article',
       publishedTime: post.date,
+      authors: [authorName],
+      tags: post.tags,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.description,
+      creator: siteConfig.contact.twitter || '@markuskreitzer',
+      site: siteConfig.contact.twitter || '@markuskreitzer',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }
 
 export async function generateStaticParams() {
-  // This would generate static paths for all published posts
-  // For now, we'll handle this dynamically
-  return [];
+  const posts = getAllPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -50,13 +84,45 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
+  const url = `${siteConfig.site.url}/blog/${slug}`;
+  const authorName = siteConfig.user.name;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: {
+      '@type': 'Person',
+      name: authorName,
+      url: siteConfig.site.url,
+    },
+    publisher: {
+      '@type': 'Person',
+      name: authorName,
+    },
+    url,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': url,
+    },
+    keywords: post.tags.join(', '),
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Navigation */}
       <nav className="py-4 bg-card border-b border-border">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold cursor-pointer">
-            Markus Kreitzer
+            {siteConfig.user.name}
           </Link>
           <div className="flex gap-6 items-center">
             <Link href="/">
@@ -105,7 +171,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <footer className="py-6 mt-12 bg-card border-t border-border">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground">
-            &copy; {new Date().getFullYear()} Markus Kreitzer. All rights reserved.
+            &copy; {new Date().getFullYear()} {siteConfig.user.name}. All rights reserved.
           </p>
         </div>
       </footer>

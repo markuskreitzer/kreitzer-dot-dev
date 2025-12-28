@@ -100,3 +100,76 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Enhanced prose styles for blog content */
+.prose {
+  @apply max-w-none;
+}
+
+.prose :where(code):not(:where([class~="not-prose"] *)) {
+  @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+.prose :where(pre):not(:where([class~="not-prose"] *)) {
+  @apply bg-muted border border-border rounded-lg p-4 overflow-x-auto;
+}
+
+.prose :where(pre code):not(:where([class~="not-prose"] *)) {
+  @apply bg-transparent p-0 text-sm;
+}
+
+.prose :where(a):not(:where([class~="not-prose"] *)) {
+  @apply text-orange-600 hover:text-orange-700 dark:text-orange-500 dark:hover:text-orange-400 no-underline hover:underline;
+}
+
+.prose :where(blockquote):not(:where([class~="not-prose"] *)) {
+  @apply border-l-4 border-orange-600 bg-muted/50 pl-4 py-2 italic;
+}
+
+.prose :where(h1):not(:where([class~="not-prose"] *)) {
+  @apply text-4xl font-bold mb-4 mt-8;
+}
+
+.prose :where(h2):not(:where([class~="not-prose"] *)) {
+  @apply text-3xl font-bold mb-3 mt-6;
+}
+
+.prose :where(h3):not(:where([class~="not-prose"] *)) {
+  @apply text-2xl font-semibold mb-2 mt-4;
+}
+
+.prose :where(h4):not(:where([class~="not-prose"] *)) {
+  @apply text-xl font-semibold mb-2 mt-3;
+}
+
+.prose :where(ul):not(:where([class~="not-prose"] *)) {
+  @apply list-disc pl-6 mb-4;
+}
+
+.prose :where(ol):not(:where([class~="not-prose"] *)) {
+  @apply list-decimal pl-6 mb-4;
+}
+
+.prose :where(li):not(:where([class~="not-prose"] *)) {
+  @apply mb-2;
+}
+
+.prose :where(table):not(:where([class~="not-prose"] *)) {
+  @apply w-full border-collapse mb-4;
+}
+
+.prose :where(th):not(:where([class~="not-prose"] *)) {
+  @apply bg-muted border border-border px-4 py-2 text-left font-semibold;
+}
+
+.prose :where(td):not(:where([class~="not-prose"] *)) {
+  @apply border border-border px-4 py-2;
+}
+
+.prose :where(hr):not(:where([class~="not-prose"] *)) {
+  @apply border-border my-8;
+}
+
+.prose :where(img):not(:where([class~="not-prose"] *)) {
+  @apply rounded-lg shadow-md my-6;
+}

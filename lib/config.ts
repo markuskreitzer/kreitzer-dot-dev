@@ -18,6 +18,7 @@ export interface SiteConfig {
     title: string
     description: string
     chatUrl: string
+    url: string
   }
 }
 
@@ -33,9 +34,10 @@ const TWITTER_URL = process.env.NEXT_PUBLIC_TWITTER_URL || undefined
 const EMAIL = process.env.NEXT_PUBLIC_EMAIL || undefined
 
 const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE || `${USER_NAME} - ${USER_TITLE}`
-const SITE_DESCRIPTION = process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 
+const SITE_DESCRIPTION = process.env.NEXT_PUBLIC_SITE_DESCRIPTION ||
   `Personal portfolio and blog of ${USER_NAME}, a passionate ${USER_TITLE}`
 const CHAT_URL = process.env.NEXT_PUBLIC_CHAT_URL || 'https://chat.kreitzer.dev'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://kreitzer.dev'
 
 export const siteConfig: SiteConfig = {
   user: {
@@ -52,7 +54,8 @@ export const siteConfig: SiteConfig = {
   site: {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    chatUrl: CHAT_URL
+    chatUrl: CHAT_URL,
+    url: SITE_URL
   }
 }
 

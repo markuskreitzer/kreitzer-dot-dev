@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { BookOpen, ChevronRight, Github, Linkedin, Mail, Twitter, MessageCircle, Sun, Moon, User } from 'lucide-react';
 import { siteConfig, getUserName, getUserDescription } from '@/lib/config';
 import { getAllPosts, getPost, BlogPost } from '@/lib/blogClient';
+import { BlogContent } from '@/components/BlogContent';
 
 // Helper Components
 const AnimatedHeading = ({ children, className }: { children: React.ReactNode, className?: string }) => (
@@ -302,7 +303,7 @@ const BlogPostView = ({ slug, onBack }: { slug: string; onBack: () => void }) =>
       </header>
 
        <div className="prose prose-lg max-w-none dark:prose-invert">
-         <div dangerouslySetInnerHTML={{ __html: post.content || '' }} />
+         <BlogContent content={post.content || ''} />
        </div>
     </div>
   );
