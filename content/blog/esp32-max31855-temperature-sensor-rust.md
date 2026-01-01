@@ -15,21 +15,21 @@ Temperature measurement is crucial for understanding water-to-ice phase transiti
 
 Our water sensor measures dielectric properties by monitoring oscillator frequency changes. But frequency shifts alone don't prove we're observing actual ice formation—they could be caused by environmental factors, mechanical stress, or electrical interference.
 
-Temperature provides the ground truth: **water freezes at 0°C**. By correlating frequency changes with temperature measurements at the freezing point, we can definitively validate that our sensor is detecting real phase transitions, not noise.
+Temperature provides the ground truth: **water freezes at $0\,^{\circ}\text{C}$**. By correlating frequency changes with temperature measurements at the freezing point, we can definitively validate that our sensor is detecting real phase transitions, not noise.
 
 ## Hardware: MAX31855 Thermocouple Amplifier
 
 The [MAX31855](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX31855.pdf) is a sophisticated thermocouple-to-digital converter that makes temperature measurement straightforward:
 
 **Key Specifications:**
-- 14-bit resolution (0.25°C)
+- 14-bit resolution ($0.25\,^{\circ}\text{C}$)
 - Built-in cold-junction compensation
 - Fault detection (open circuit, shorts)
-- SPI interface (read-only, up to 5 MHz)
-- Temperature range: -270°C to +1800°C (K-type thermocouple)
-- Accuracy: ±2°C (0-700°C range)
+- SPI interface (read-only, up to $5$~MHz)
+- Temperature range: $-270\,^{\circ}\text{C}$ to $+1800\,^{\circ}\text{C}$ (K-type thermocouple)
+- Accuracy: $\pm 2\,^{\circ}\text{C}$ ($0$--$700\,^{\circ}\text{C}$ range)
 
-For water/ice experiments (0-100°C), a K-type thermocouple provides excellent accuracy with the MAX31855's ±2°C specification.
+For water/ice experiments ($0$--$100\,^{\circ}\text{C}$), a K-type thermocouple provides excellent accuracy with the MAX31855's $\pm 2\,^{\circ}\text{C}$ specification.
 
 ## The Implementation Challenge: embedded-hal Compatibility
 
@@ -107,8 +107,8 @@ pub fn read_temperature(&mut self) -> Result<TempReading, Error<SPI::Error>> {
 ```
 
 The key insight: bit manipulation is straightforward when you understand the [datasheet format](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX31855.pdf):
-- Bits 31-18: Thermocouple temperature (14-bit, 0.25°C/bit)
-- Bits 15-4: Internal temperature (12-bit, 0.0625°C/bit)
+- Bits 31-18: Thermocouple temperature (14-bit, $0.25\,^{\circ}\text{C}$/bit)
+- Bits 15-4: Internal temperature (12-bit, $0.0625\,^{\circ}\text{C}$/bit)
 - Bits 0-2: Fault indicators
 
 ## Navigating esp-hal 1.0 API Changes
@@ -283,8 +283,8 @@ Pin Configuration:
 Starting continuous monitoring (2-second interval)...
 
 ┌─────────────────────────────────────────┐
-│ Temperature: 23.25°C
-│ Internal:    22.50°C
+│ Temperature: $23.25\,^{\circ}\text{C}$
+│ Internal:    $22.50\,^{\circ}\text{C}$
 │ Status:      ✓ OK
 └─────────────────────────────────────────┘
 ```
@@ -294,12 +294,12 @@ The second example tracks min/max/average temperatures and fault rates:
 
 ```
 ═══ Statistics (last 10 readings) ═══
-  Average: 23.15°C
-  Min:     22.75°C
-  Max:     23.50°C
-  Range:   0.75°C
+  Average: $23.15\,^{\circ}\text{C}$
+  Min:     $22.75\,^{\circ}\text{C}$
+  Max:     $23.50\,^{\circ}\text{C}$
+  Range:   $0.75\,^{\circ}\text{C}$
   Faults:  0
-  Fault%:  0.0%
+  Fault%:  $0.0\%$
 ═══════════════════════════════════════
 ```
 
@@ -309,13 +309,13 @@ The second example tracks min/max/average temperatures and fault rates:
 To validate the ±2°C accuracy specification:
 
 1. Fill container with ice and water
-2. Stir to ensure 0°C equilibrium
+2. Stir to ensure $0\,^{\circ}\text{C}$ equilibrium
 3. Submerge thermocouple tip (avoid container walls)
 4. Record 10 readings
 
 Expected results:
-- Average: 0°C ± 2°C
-- Standard deviation: < 0.5°C
+- Average: $0\,^{\circ}\text{C} \pm 2\,^{\circ}\text{C}$
+- Standard deviation: $< 0.5\,^{\circ}\text{C}$
 - No faults
 
 Example validation:

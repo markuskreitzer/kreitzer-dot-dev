@@ -26,43 +26,33 @@ Digital frequency measurement appears deceptively simple: count edges over time,
 
 ### Fundamental Relationship
 
-The frequency *f* of a periodic signal is the inverse of its period *T*:
+The frequency $f$ of a periodic signal is the inverse of its period $T$:
 
-```
-f = 1/T
-```
+$$f = \frac{1}{T}$$
 
-Where:
-- *f* = frequency in Hertz (Hz)
-- *T* = period in seconds (s)
+where $f$ is the frequency in Hertz (Hz) and $T$ is the period in seconds (s).
 
 ### Period Measurement via Edge Detection
 
-For a square wave, we measure the time between consecutive rising edges (or falling edges) to determine the period. Given two timestamp measurements *t₁* and *t₂*:
+For a square wave, we measure the time between consecutive rising edges (or falling edges) to determine the period. Given two timestamp measurements $t_1$ and $t_2$:
 
-```
-T = t₂ - t₁
-```
+$$T = t_2 - t_1$$
 
 ### Noise Reduction Through Averaging
 
-To reduce measurement error from noise and timing jitter, we employ statistical averaging over *N* samples:
+To reduce measurement error from noise and timing jitter, we employ statistical averaging over $N$ samples:
 
-```
-T_avg = (1/N) × Σ(i=1 to N) T_i
-```
+$$T_{\text{avg}} = \frac{1}{N} \sum_{i=1}^{N} T_i$$
 
-According to the Central Limit Theorem, averaging *N* independent measurements reduces the standard deviation of the error by a factor of √N [1]. For our implementation, we use *N = 10* samples by default, providing approximately 3.16× improvement in measurement precision.
+According to the Central Limit Theorem, averaging $N$ independent measurements reduces the standard deviation of the error by a factor of $\sqrt{N}$ [1]. For our implementation, we use $N = 10$ samples by default, providing approximately $3.16\times$ improvement in measurement precision.
 
 ### Timing Resolution Considerations
 
-The ESP32's system timer operates at the CPU frequency (240 MHz in our configuration), providing a theoretical resolution of:
+The ESP32's system timer operates at the CPU frequency ($240$~MHz in our configuration), providing a theoretical resolution of:
 
-```
-Resolution = 1 / 240,000,000 Hz ≈ 4.17 nanoseconds
-```
+$$\text{Resolution} = \frac{1}{240{,}000{,}000\text{ Hz}} \approx 4.17\text{ ns}$$
 
-However, the `esp-hal` crate provides microsecond-resolution timing through the `Instant` API, giving us 1 μs precision—more than adequate for frequencies in the Hz to kHz range.
+However, the `esp-hal` crate provides microsecond-resolution timing through the `Instant` API, giving us $1~\mu\text{s}$ precision—more than adequate for frequencies in the Hz to kHz range.
 
 ## Implementation Architecture
 
@@ -109,12 +99,12 @@ fn measure_single_period(&mut self) -> Option<u64> {
 
 While interrupt-driven edge detection might seem ideal, we chose polling for several reasons:
 
-1. **Timing Precision**: Interrupt latency on ESP32 varies (5-25 μs) depending on WiFi/Bluetooth activity [3]
+1. **Timing Precision**: Interrupt latency on ESP32 varies ($5$--$25~\mu\text{s}$) depending on WiFi/Bluetooth activity [3]
 2. **Simplicity**: No need for complex interrupt handling or atomic operations
 3. **Predictability**: Polling provides consistent timing behavior
 4. **Tight Loops**: Modern CPUs make tight polling loops efficient for sub-millisecond operations
 
-For frequencies below 10 kHz, polling overhead is negligible compared to signal periods.
+For frequencies below $10$~kHz, polling overhead is negligible compared to signal periods.
 
 ### Timeout Mechanism
 
@@ -140,7 +130,7 @@ fn wait_for_edge(&mut self, from_level: Level, to_level: Level) -> Option<()> {
 }
 ```
 
-The 1-second timeout (`EDGE_TIMEOUT_MS = 1000`) allows measurement of signals as low as 1 Hz while preventing indefinite blocking.
+The $1$-second timeout (`EDGE_TIMEOUT_MS = 1000`) allows measurement of signals as low as $1$~Hz while preventing indefinite blocking.
 
 ## Rust-Specific Challenges and Solutions
 
@@ -230,19 +220,19 @@ Our test suite cycles through frequencies spanning three orders of magnitude:
 
 | Frequency | Period | Expected Use Case |
 |-----------|--------|-------------------|
-| 100 Hz | 10,000 μs | Low-speed sensors |
-| 500 Hz | 2,000 μs | Motor encoders |
-| 1,000 Hz | 1,000 μs | Audio/Control loops |
-| 2,000 Hz | 500 μs | PWM measurement |
-| 5,000 Hz | 200 μs | High-speed counting |
+| $100$~Hz | $10{,}000~\mu\text{s}$ | Low-speed sensors |
+| $500$~Hz | $2{,}000~\mu\text{s}$ | Motor encoders |
+| $1{,}000$~Hz | $1{,}000~\mu\text{s}$ | Audio/Control loops |
+| $2{,}000$~Hz | $500~\mu\text{s}$ | PWM measurement |
+| $5{,}000$~Hz | $200~\mu\text{s}$ | High-speed counting |
 
 ### Results
 
-Initial testing with a 1 kHz signal showed:
-- **Measured wavelength**: 1000 μs (exact)
-- **Calculated frequency**: 1000 Hz
-- **Error**: 0%
-- **Sample averaging**: 10 measurements
+Initial testing with a $1$~kHz signal showed:
+- **Measured wavelength**: $1000~\mu\text{s}$ (exact)
+- **Calculated frequency**: $1000$~Hz
+- **Error**: $0\%$
+- **Sample averaging**: $10$ measurements
 - **WiFi status**: Connected and active
 
 This demonstrates the library's ability to achieve theoretical accuracy even in the presence of system interference.
@@ -273,20 +263,20 @@ The `Option<u64>` return type elegantly handles timeouts and errors through Rust
 
 ### Memory Footprint
 
-- Library code: ~2 KB compiled (release mode with LTO)
-- Stack usage: ~800 bytes (100-sample array)
+- Library code: $\sim 2$~KB compiled (release mode with LTO)
+- Stack usage: $\sim 800$ bytes ($100$-sample array)
 - No heap allocation required
 
 ### Timing Overhead
 
 For a single measurement cycle:
-1. Edge detection: 2× signal period minimum
-2. Timestamp capture: <1 μs
-3. Calculation: <10 CPU cycles
+1. Edge detection: $2\times$ signal period minimum
+2. Timestamp capture: $< 1~\mu\text{s}$
+3. Calculation: $< 10$ CPU cycles
 
-For 10-sample averaging at 1 kHz:
-- Total time: ~10 ms (10 periods)
-- Overhead: <0.1% (dominated by signal period, not computation)
+For $10$-sample averaging at $1$~kHz:
+- Total time: $\sim 10$~ms ($10$ periods)
+- Overhead: $< 0.1\%$ (dominated by signal period, not computation)
 
 ## Lessons Learned: Rust for Embedded Systems
 
@@ -312,7 +302,7 @@ Despite challenges, Rust's safety guarantees and zero-cost abstractions make it 
 
 Several enhancements could extend this library's capabilities:
 
-1. **Interrupt-Based Measurement**: For very low frequencies (<1 Hz), interrupt-driven approach would be more power-efficient
+1. **Interrupt-Based Measurement**: For very low frequencies ($< 1$~Hz), interrupt-driven approach would be more power-efficient
 2. **Hardware Timer Capture**: ESP32's hardware timer capture units could provide even higher precision
 3. **Duty Cycle Measurement**: Extend to measure pulse width and duty cycle
 4. **Async Support**: Integration with `embassy` async runtime for concurrent operations
@@ -322,7 +312,7 @@ Several enhancements could extend this library's capabilities:
 
 Building a frequency measurement library for ESP32 in Rust demonstrates both the power and challenges of embedded Rust development. By combining solid theoretical foundations (statistical averaging, proper timing resolution) with Rust's safety guarantees, we've created a library that is both accurate and robust.
 
-The ability to achieve 0% error in frequency measurement while maintaining an active WiFi connection validates our design choices: polling-based edge detection, statistical averaging, and microsecond-resolution timing prove sufficient for real-world embedded applications.
+The ability to achieve $0\%$ error in frequency measurement while maintaining an active WiFi connection validates our design choices: polling-based edge detection, statistical averaging, and microsecond-resolution timing prove sufficient for real-world embedded applications.
 
 Most importantly, Rust's type system caught numerous bugs at compile-time that would have required extensive testing in C—bugs involving lifetime management, configuration API usage, and resource ownership. This compile-time correctness, combined with runtime performance matching hand-optimized C, makes Rust an increasingly compelling choice for safety-critical embedded systems.
 
@@ -347,4 +337,4 @@ Most importantly, Rust's type system caught numerous bugs at compile-time that w
 
 ---
 
-*Author's Note: This project was developed on macOS using esp-rs toolchain v1.88. All measurements were performed on ESP32-D0WD-V3 (revision 3.0) running at 240 MHz. The complete source code, including the frequency meter library and WiFi-enabled test harness, is available in the project repository.*
+*Author's Note: This project was developed on macOS using esp-rs toolchain v1.88. All measurements were performed on ESP32-D0WD-V3 (revision 3.0) running at $240$~MHz. The complete source code, including the frequency meter library and WiFi-enabled test harness, is available in the project repository.*
