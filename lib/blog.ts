@@ -1,10 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { remark } from 'remark';
-import html from 'remark-html';
-import math from 'remark-math';
-import gfm from 'remark-gfm';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkMath from 'remark-math';
+import remarkGfm from 'remark-gfm';
+import remarkRehype from 'remark-rehype';
+import rehypeKatex from 'rehype-katex';
+import rehypeStringify from 'rehype-stringify';
 import { visit } from 'unist-util-visit';
 import { calculateReadingTime } from './readingTime';
 
@@ -87,7 +90,7 @@ export async function getPost(slug: string): Promise<BlogPost | null> {
 
   // Process mermaid code blocks to placeholders for client-side rendering
   const processMermaidBlocks = () => (tree: any) => {
-    visit(tree, 'code', (node) => {
+    visit(tree, 'code', (node: any) => {
       if (node.lang === 'mermaid') {
         node.type = 'html';
         node.value = `<div class="mermaid-placeholder" data-mermaid="${encodeURIComponent(node.value)}"></div>`;
@@ -96,11 +99,15 @@ export async function getPost(slug: string): Promise<BlogPost | null> {
   };
 
   // Process markdown content to HTML with math and mermaid support
-  const processedContent = await remark()
-    .use(gfm) // GitHub-flavored markdown
-    .use(math) // LaTeX math support
+  // Using unified pipeline: remark (markdown) -> rehype (HTML) with KaTeX for math
+  const processedContent = await unified()
+    .use(remarkParse) // Parse markdown
+    .use(remarkGfm) // GitHub-flavored markdown
+    .use(remarkMath) // Parse LaTeX math syntax
     .use(processMermaidBlocks) // Custom mermaid processing
-    .use(html, { sanitize: false })
+    .use(remarkRehype, { allowDangerousHtml: true }) // Convert to HTML AST
+    .use(rehypeKatex) // Render math to KaTeX HTML
+    .use(rehypeStringify, { allowDangerousHtml: true }) // Convert to HTML string
     .process(matterResult.content);
   
   const contentHtml = processedContent.toString();
