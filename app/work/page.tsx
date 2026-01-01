@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { siteConfig } from '@/lib/config';
-import { Github, ExternalLink, Code2, Cpu, Globe, Zap } from 'lucide-react';
+import { Github, ExternalLink, Code2, Cpu, Globe, Zap, Brain, Server, Shield, Sprout, Radio, Ship, Award, Video, Smartphone, Microscope } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Work & Projects',
@@ -18,27 +18,93 @@ export const metadata: Metadata = {
 };
 
 export default function WorkPage() {
-  // Placeholder projects - user will provide real content
   const projects = [
     {
+      title: 'AI/ML Service Broker System',
+      description: 'Architected and implemented a novel service broker system for AI/ML tool integration at Peopletec. Developed AI pipelines integrating Azure AI services with locally hosted LLM inference models. Led technical direction and standards adoption across engineering teams.',
+      tags: ['AI/ML', 'Python', 'Azure', 'LLM', 'Architecture', 'Leadership'],
+      organization: 'Peopletec',
+      period: 'Dec 2024 - Present',
+      icon: Brain,
+    },
+    {
+      title: 'Enterprise GitLab CI/CD & ML Infrastructure',
+      description: 'Managed 89 diverse software projects using GitLab CI/CD on Kubernetes infrastructure. Developed custom machine learning solutions with fine-tuned LLMs and migrated complex MATLAB workflows to Python, achieving $160,000 in annual licensing cost savings.',
+      tags: ['GitLab CI/CD', 'Kubernetes', 'Python', 'ML', 'DevOps', 'Cost Optimization'],
+      organization: 'Valkyrie Enterprises',
+      period: 'May 2020 - Dec 2024',
+      icon: Server,
+    },
+    {
+      title: 'Mission-Critical DoD/VA System',
+      description: 'Led development and maintenance of mission-critical Department of Defense and VA systems supporting global user base of 300,000+ users. Implemented robust CI/CD pipelines, cybersecurity measures (SAST/DAST), and high-availability infrastructure across AWS and Azure.',
+      tags: ['DoD', 'AWS', 'Azure', 'Cybersecurity', 'High Availability', 'CI/CD'],
+      organization: 'Mantech',
+      period: 'Aug 2011 - May 2020',
+      icon: Shield,
+    },
+    {
+      title: 'USDA IoT Fire Prevention System',
+      description: 'Designed and developed an IoT sensor device for real-time hay bale moisture and temperature monitoring to prevent spontaneous combustion. Published research paper and presented findings at agricultural technology conferences. Utilized embedded systems and wireless communication protocols.',
+      tags: ['IoT', 'Embedded Systems', 'Research', 'Agriculture', 'C/C++', 'Sensors'],
+      organization: 'Auburn University',
+      period: '2017 - 2018',
+      icon: Sprout,
+    },
+    {
+      title: 'NASA Chaos Communication System',
+      description: 'Researched and developed chaos-based communication system for NASA applications. Focused on secure, noise-resistant communication protocols using chaotic signal processing. Applied advanced signal processing and neural network techniques for signal reconstruction.',
+      tags: ['NASA', 'Signal Processing', 'Research', 'Neural Networks', 'MATLAB', 'Python'],
+      organization: 'Auburn University',
+      period: '2016 - 2017',
+      icon: Radio,
+    },
+    {
+      title: 'Autonomous Nautical Radiation Assessment',
+      description: 'Developed autonomous vessel system for radiation assessment in marine environments. Integrated autonomous navigation, sensor fusion, and real-time data transmission capabilities. Applied robotics and embedded systems expertise to environmental monitoring challenge.',
+      tags: ['Robotics', 'Autonomous Systems', 'Sensors', 'Embedded', 'Research'],
+      organization: 'Research Project',
+      period: '2013',
+      icon: Ship,
+    },
+    {
+      title: 'USMC Tactical Mobile Command Center',
+      description: 'Designed innovative tactical mobile command center while serving as Ground Communications Technician in the United States Marine Corps. Awarded Navy and Marine Corps Achievement Medal for exceptional technical innovation and implementation. Demonstrated leadership and mission-critical system design under operational constraints.',
+      tags: ['Military', 'Leadership', 'Communications', 'Tactical Systems', 'Hardware'],
+      organization: 'U.S. Marine Corps',
+      period: '2004 - 2005',
+      icon: Award,
+    },
+    {
+      title: 'AI Video Upscaler',
+      description: 'Experimental FFmpeg/PyTorch video upscaler using ESRGAN (Enhanced Super-Resolution Generative Adversarial Networks) AI/ML methods. Implements state-of-the-art deep learning techniques to enhance video resolution and quality through intelligent pixel reconstruction.',
+      tags: ['Python', 'PyTorch', 'FFmpeg', 'ESRGAN', 'AI/ML', 'Computer Vision'],
+      github: 'https://github.com/markuskreitzer/video_upscaler',
+      icon: Video,
+    },
+    {
+      title: 'iOS Media Downloader',
+      description: 'FastAPI-based media archiver with iOS share sheet integration. Enables quick media downloads from social platforms via iOS Shortcuts. ⚠️ Experimental project - users must comply with copyright laws and platform terms of service.',
+      tags: ['Python', 'FastAPI', 'iOS Shortcuts', 'REST API', 'Media Processing'],
+      github: 'https://github.com/markuskreitzer/media_downloader',
+      icon: Smartphone,
+      status: 'Experimental',
+    },
+    {
+      title: 'PicoScope MCP Server',
+      description: 'STDIO Model Context Protocol (MCP) server for controlling PicoScope oscilloscopes with AI assistants. Novel integration enabling AI-driven test equipment control and measurement automation. Currently in active development.',
+      tags: ['Python', 'MCP', 'Test Equipment', 'AI Integration', 'Instrumentation'],
+      github: 'https://github.com/markuskreitzer/picoscope_mcp',
+      icon: Microscope,
+      status: 'Alpha',
+    },
+    {
       title: 'Personal Blog & Portfolio',
-      description: 'A modern, responsive blog built with Next.js 15, React 19, and TypeScript. Features markdown-based blog posts with syntax highlighting, mermaid diagrams, LaTeX math rendering, and comprehensive SEO optimization.',
+      description: 'Modern, responsive technical blog built with Next.js 15, React 19, and TypeScript. Features markdown-based posts with syntax highlighting, mermaid diagrams, LaTeX math rendering, and comprehensive SEO optimization. Demonstrates full-stack development and modern web practices.',
       tags: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Vercel'],
       github: 'https://github.com/markuskreitzer/kreitzer-dot-dev',
       live: 'https://kreitzer.dev',
       icon: Globe,
-    },
-    {
-      title: 'ESP32 Frequency Meter',
-      description: 'A high-precision frequency measurement device built with ESP32 and Rust. Demonstrates hardware programming expertise and real-time signal processing capabilities.',
-      tags: ['Rust', 'ESP32', 'Embedded', 'IoT', 'Hardware'],
-      icon: Cpu,
-    },
-    {
-      title: 'Scalable Node.js APIs',
-      description: 'Design patterns and best practices for building scalable REST APIs with Node.js. Covers performance optimization, caching strategies, and microservices architecture.',
-      tags: ['Node.js', 'REST API', 'Microservices', 'Redis', 'Docker'],
-      icon: Code2,
     },
   ];
 
@@ -69,9 +135,9 @@ export default function WorkPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Work & Projects</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            A showcase of my recent projects spanning web development, embedded systems,
-            and open-source contributions. Each project represents a unique challenge and
-            learning opportunity.
+            A showcase of my professional work spanning AI/ML systems, enterprise infrastructure,
+            embedded systems, research projects, and military service. Over 20 years of delivering
+            mission-critical solutions across government, research, and commercial sectors.
           </p>
         </div>
 
@@ -101,7 +167,24 @@ export default function WorkPage() {
                       )}
                     </div>
                   </div>
-                  <CardTitle>{project.title}</CardTitle>
+                  <div className="flex items-center gap-2 mb-2">
+                    <CardTitle className="flex-grow">{project.title}</CardTitle>
+                    {project.status && (
+                      <Badge variant="outline" className="text-xs">
+                        {project.status}
+                      </Badge>
+                    )}
+                  </div>
+                  {project.organization && (
+                    <div className="text-sm text-muted-foreground mb-1">
+                      <strong>{project.organization}</strong>
+                    </div>
+                  )}
+                  {project.period && (
+                    <div className="text-xs text-muted-foreground mb-3">
+                      {project.period}
+                    </div>
+                  )}
                   <CardDescription>{project.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow">
@@ -118,31 +201,28 @@ export default function WorkPage() {
           })}
         </div>
 
-        {/* Placeholder for More Projects */}
-        <Card className="mb-16 border-dashed">
-          <CardHeader className="text-center">
-            <CardTitle>More Projects Coming Soon</CardTitle>
-            <CardDescription>
-              I'm constantly working on new projects and contributions. Check back soon for updates!
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <div className="flex justify-center gap-4">
-              <a href={siteConfig.contact.github} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline">
-                  <Github className="mr-2 h-4 w-4" />
-                  View GitHub
-                </Button>
-              </a>
-              <Link href="/blog">
-                <Button variant="outline">
-                  <Zap className="mr-2 h-4 w-4" />
-                  Read Blog
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Open Source & Publications */}
+        <div className="mb-16 text-center">
+          <h2 className="text-2xl font-semibold mb-4">Open Source & Publications</h2>
+          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            Active contributor to open-source projects with code preserved in GitHub's Arctic Code Vault.
+            Published research papers on IoT sensors and agricultural monitoring systems.
+          </p>
+          <div className="flex justify-center gap-4">
+            <a href={siteConfig.contact.github} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline">
+                <Github className="mr-2 h-4 w-4" />
+                View GitHub Profile
+              </Button>
+            </a>
+            <Link href="/blog">
+              <Button variant="outline">
+                <Zap className="mr-2 h-4 w-4" />
+                Read Technical Blog
+              </Button>
+            </Link>
+          </div>
+        </div>
 
         {/* Skills Highlight */}
         <div className="text-center py-12 bg-muted rounded-lg">

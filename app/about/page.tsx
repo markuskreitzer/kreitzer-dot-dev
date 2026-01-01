@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { siteConfig } from '@/lib/config';
-import { Github, Linkedin, Mail, Twitter, MapPin, Briefcase, GraduationCap } from 'lucide-react';
+import { Github, Linkedin, Mail, Twitter, MapPin, Briefcase, GraduationCap, ChefHat } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -46,27 +46,56 @@ export default function AboutPage() {
 
         <div className="prose prose-lg max-w-none dark:prose-invert mb-12">
           <p className="text-xl text-muted-foreground leading-relaxed mb-6">
-            Hi! I'm {siteConfig.user.name}, a passionate software engineer with expertise in
-            building modern web applications and embedded systems.
+            Hi! I'm {siteConfig.user.name}, a technology leader with over 20 years of experience
+            architecting, building, securing, and managing complex systems across government, research,
+            and commercial sectors.
           </p>
 
           <p>
-            I specialize in full-stack development using cutting-edge technologies like React,
-            Next.js, and TypeScript, combined with a deep interest in hardware programming and
-            embedded systems. My work spans from creating performant web applications to developing
-            firmware for microcontrollers like the ESP32.
+            Currently serving as an <strong>AI/ML Software Engineer/Architect Leader at Peopletec</strong>,
+            I spearhead the Corporate Division's AI/ML tool implementation, establishing technical direction
+            and standards for adoption across engineering teams. My work focuses on architecting novel
+            service broker systems, developing AI pipelines that integrate Azure AI services with locally
+            hosted LLM inference models, and mentoring teams of 5-10 engineers on best practices in CI/CD
+            and infrastructure automation.
           </p>
 
           <p>
-            Throughout my career, I've focused on writing clean, maintainable code and building
-            scalable solutions that solve real-world problems. I'm particularly interested in the
-            intersection of web technologies and IoT, where I can leverage both my software
-            development and hardware expertise.
+            My expertise spans <strong>software engineering, DevOps methodologies, cloud infrastructure
+            (AWS/Azure), AI/ML integration, cybersecurity, and distributed systems design</strong>. I have
+            a proven track record of leading technical direction, implementing robust CI/CD pipelines, and
+            delivering mission-critical solutions supporting global user bases numbering in the hundreds of
+            thousands.
           </p>
 
           <p>
-            When I'm not coding, you can find me exploring new technologies, contributing to
-            open-source projects, or writing about software development on my blog.
+            Prior to my current role, I served as a <strong>Senior Research Scientist/Engineer at Valkyrie
+            Enterprises</strong>, where I managed 89 diverse software projects using GitLab CI/CD on
+            Kubernetes, developed custom machine learning solutions with fine-tuned LLMs, and migrated
+            complex MATLAB workflows to Python—achieving $160,000 in annual licensing cost savings.
+          </p>
+
+          <p>
+            I hold a <strong>Master of Science in Electrical Engineering from Auburn University</strong> (2018)
+            with a focus on AI/ML, Neural Networks, and Advanced AI Systems. I'm an active open-source
+            contributor with code included in GitHub's Arctic Code Vault program, and I've published multiple
+            research papers on IoT sensors and agricultural monitoring systems.
+          </p>
+
+          <p>
+            As a proud <strong>United States Marine Corps veteran</strong> (Sergeant, Ground Communications
+            Technician), I was awarded the Navy and Marine Corps Achievement Medal for designing an innovative
+            tactical mobile command center. This experience instilled in me the importance of reliability,
+            security, and mission-critical system design.
+          </p>
+
+          <p>
+            When I'm not coding, you can find me perfecting my espresso brewing technique, experimenting
+            with new recipes in the kitchen, or exploring the outdoors through hiking and mountain biking.
+            I've even trained a <a href="https://chatgpt.com/g/g-3oPIRNBis-chef-markus" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-700 underline">personal AI chef</a> that
+            cooks exactly to my style and preferences. I'm passionate about the balance between technology
+            and nature, and I find that time spent on trails or crafting the perfect shot of espresso often
+            leads to my best technical insights.
           </p>
         </div>
 
@@ -76,60 +105,69 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Frontend Development</CardTitle>
+                <CardTitle>Programming & Scripting</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">React</Badge>
-                  <Badge variant="secondary">Next.js</Badge>
-                  <Badge variant="secondary">TypeScript</Badge>
-                  <Badge variant="secondary">Tailwind CSS</Badge>
-                  <Badge variant="secondary">Framer Motion</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Backend Development</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">Node.js</Badge>
-                  <Badge variant="secondary">REST APIs</Badge>
-                  <Badge variant="secondary">PostgreSQL</Badge>
-                  <Badge variant="secondary">Redis</Badge>
-                  <Badge variant="secondary">Docker</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Embedded Systems</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">Rust</Badge>
-                  <Badge variant="secondary">ESP32</Badge>
-                  <Badge variant="secondary">IoT</Badge>
-                  <Badge variant="secondary">Firmware</Badge>
+                  <Badge variant="secondary">Python (Advanced)</Badge>
+                  <Badge variant="secondary">TypeScript/JavaScript</Badge>
                   <Badge variant="secondary">C/C++</Badge>
+                  <Badge variant="secondary">Rust</Badge>
+                  <Badge variant="secondary">Golang</Badge>
+                  <Badge variant="secondary">Bash</Badge>
+                  <Badge variant="secondary">Perl</Badge>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Tools & Practices</CardTitle>
+                <CardTitle>Cloud & Infrastructure</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">Git</Badge>
-                  <Badge variant="secondary">CI/CD</Badge>
-                  <Badge variant="secondary">Testing</Badge>
-                  <Badge variant="secondary">Agile</Badge>
-                  <Badge variant="secondary">Clean Code</Badge>
+                  <Badge variant="secondary">AWS</Badge>
+                  <Badge variant="secondary">Azure</Badge>
+                  <Badge variant="secondary">Kubernetes</Badge>
+                  <Badge variant="secondary">Docker</Badge>
+                  <Badge variant="secondary">Terraform</Badge>
+                  <Badge variant="secondary">Ansible</Badge>
+                  <Badge variant="secondary">GitLab CI/CD</Badge>
+                  <Badge variant="secondary">Jenkins</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>AI/ML & Data</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary">LLM Fine-tuning</Badge>
+                  <Badge variant="secondary">Neural Networks</Badge>
+                  <Badge variant="secondary">MLOps Pipelines</Badge>
+                  <Badge variant="secondary">Data Engineering</Badge>
+                  <Badge variant="secondary">Jupyter</Badge>
+                  <Badge variant="secondary">Oracle DB</Badge>
+                  <Badge variant="secondary">SQL</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Security & Systems</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary">SSO/mTLS</Badge>
+                  <Badge variant="secondary">SAST/DAST</Badge>
+                  <Badge variant="secondary">DISA STIG</Badge>
+                  <Badge variant="secondary">Supply Chain Security</Badge>
+                  <Badge variant="secondary">Distributed Systems</Badge>
+                  <Badge variant="secondary">High Availability</Badge>
+                  <Badge variant="secondary">Microservices</Badge>
                 </div>
               </CardContent>
             </Card>
@@ -172,6 +210,12 @@ export default function AboutPage() {
                 </Button>
               </a>
             )}
+            <a href="https://chatgpt.com/g/g-3oPIRNBis-chef-markus" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="lg">
+                <ChefHat className="mr-2 h-5 w-5" />
+                Chef Markus AI
+              </Button>
+            </a>
           </div>
         </div>
 
