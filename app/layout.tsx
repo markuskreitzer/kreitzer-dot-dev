@@ -59,6 +59,12 @@ export default function RootLayout({
           title={`${siteConfig.site.title} RSS Feed`}
           href={`${siteConfig.site.url}/feed.xml`}
         />
+        {/* KaTeX CSS for math rendering */}
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+          crossOrigin="anonymous"
+        />
         {/* Analytics Placeholder - See lib/analytics.ts for setup instructions */}
         {/* Uncomment and configure your preferred analytics solution */}
       </head>
