@@ -11,6 +11,7 @@ import { siteConfig, getUserName, getUserDescription } from '@/lib/config';
 import { getAllPosts, BlogPost } from '@/lib/blogClient';
 import { useRouter } from 'next/navigation';
 import { MobileMenu } from '@/components/MobileMenu';
+import { Analytics } from "@vercel/analytics/next"
 
 // Helper Components
 const AnimatedHeading = ({ children, className }: { children: React.ReactNode, className?: string }) => (

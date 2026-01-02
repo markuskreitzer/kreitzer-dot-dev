@@ -26,7 +26,7 @@ export interface SiteConfig {
 const USER_NAME = process.env.NEXT_PUBLIC_USER_NAME || 'Markus Kreitzer'
 const USER_TITLE = process.env.NEXT_PUBLIC_USER_TITLE || 'Software Engineer'
 const USER_DESCRIPTION = process.env.NEXT_PUBLIC_USER_DESCRIPTION || 
-  "I'm a passionate Software Engineer specializing in building robust and scalable web applications. I love turning complex problems into elegant, efficient code. I'm particularly interested in Full-Stack Development, Cloud Technologies, and Machine Learning."
+  "I'm a PhD Student in Electrical Engineering specializing in building robust and scalable IoT sensors by night. During the day I am a technical leader managing a group of AI and web applications engineers moderizing digital threads for Test Engineers using model based systems engineering and digital engineering tools. I love turning complex problems into elegant, efficient code. I'm particularly interested in Full-Stack Development, Cloud Technologies, and Machine Learning."
 
 const GITHUB_URL = process.env.NEXT_PUBLIC_GITHUB_URL || 'https://github.com/markuskreitzer'
 const LINKEDIN_URL = process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://linkedin.com/in/markuskreitzer'
