@@ -18,10 +18,18 @@ export function BlogContent({ content }: BlogContentProps) {
     const elements: React.ReactNode[] = [];
     let elementIndex = 0;
 
+    // Elements that cannot have whitespace-only text nodes as children
+    const noWhitespaceElements = ['table', 'thead', 'tbody', 'tfoot', 'tr', 'colgroup'];
+
     // Process all child nodes, replacing mermaid placeholders with components
-    const processNode = (node: Node): React.ReactNode => {
+    const processNode = (node: Node, parentTagName?: string): React.ReactNode => {
       if (node.nodeType === Node.TEXT_NODE) {
-        return node.textContent || '';
+        const text = node.textContent || '';
+        // Filter out whitespace-only text nodes inside table elements
+        if (parentTagName && noWhitespaceElements.includes(parentTagName) && !text.trim()) {
+          return null;
+        }
+        return text;
       }
 
       if (node.nodeType === Node.ELEMENT_NODE) {
@@ -45,18 +53,33 @@ export function BlogContent({ content }: BlogContentProps) {
         }
 
         // Build props from attributes
-        const props: Record<string, string> = { key: `el-${elementIndex++}` };
+        const props: Record<string, unknown> = { key: `el-${elementIndex++}` };
         Array.from(element.attributes).forEach(attr => {
           // Convert HTML attributes to React props
           let propName = attr.name;
           if (propName === 'class') propName = 'className';
           if (propName === 'for') propName = 'htmlFor';
-          props[propName] = attr.value;
+
+          // Convert style string to React style object
+          if (propName === 'style') {
+            const styleObj: Record<string, string> = {};
+            attr.value.split(';').forEach(rule => {
+              const [property, value] = rule.split(':').map(s => s.trim());
+              if (property && value) {
+                // Convert CSS property to camelCase (e.g., background-color -> backgroundColor)
+                const camelCase = property.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+                styleObj[camelCase] = value;
+              }
+            });
+            props[propName] = styleObj;
+          } else {
+            props[propName] = attr.value;
+          }
         });
 
-        // Process children recursively
+        // Process children recursively, passing current tag name for whitespace filtering
         const children = Array.from(element.childNodes)
-          .map(child => processNode(child))
+          .map(child => processNode(child, tagName))
           .filter(child => child !== null && child !== '');
 
         // Handle self-closing tags

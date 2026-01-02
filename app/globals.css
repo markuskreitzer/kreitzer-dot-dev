@@ -141,6 +141,12 @@ body {
   font-size: 85%;
 }
 
+/* Remove default backticks from Tailwind Typography */
+.prose :where(code):not(:where([class~="not-prose"] *, pre *))::before,
+.prose :where(code):not(:where([class~="not-prose"] *, pre *))::after {
+  content: none;
+}
+
 .dark .prose :where(code):not(:where([class~="not-prose"] *, pre *)) {
   background-color: rgba(110, 118, 129, 0.4);
   color: #e6edf3;
