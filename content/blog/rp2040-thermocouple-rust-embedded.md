@@ -9,9 +9,7 @@ slug: "rp2040-thermocouple-rust-embedded"
 
 # Implementing a MAX31855 Thermocouple Interface on RP2040 with Embedded Rust
 
-## Abstract
-
-This paper presents a complete implementation of a thermocouple-based temperature measurement system using the Raspberry Pi Pico (RP2040) microcontroller and the MAX31855 thermocouple-to-digital converter. The system is implemented in Rust using the `embedded-hal` hardware abstraction layer, enabling platform-agnostic driver development. We demonstrate cold-junction compensation, fault detection, and introduce a novel remote firmware update mechanism via USB serial commands. Experimental results show stable temperature readings with 0.25°C resolution, matching the theoretical specifications of the MAX31855. The complete implementation, including a reusable driver library, is available as open-source software.
+This post presents a complete implementation of a thermocouple-based temperature measurement system using the Raspberry Pi Pico (RP2040) microcontroller and the MAX31855 thermocouple-to-digital converter. The system is implemented in Rust using the `embedded-hal` hardware abstraction layer, enabling platform-agnostic driver development. I demonstrate cold-junction compensation, fault detection, and introduce a novel remote firmware update mechanism via USB serial commands. Experimental results show stable temperature readings with 0.25°C resolution, matching the theoretical specifications of the MAX31855. The complete implementation, including a reusable driver library, is available as open-source software.
 
 ## I. Introduction
 
@@ -21,11 +19,11 @@ Temperature measurement is fundamental to countless embedded systems application
 2. **Cold-junction compensation**: The reference junction temperature must be measured and compensated
 3. **Linearization**: The thermocouple voltage-temperature relationship is non-linear
 
-The MAX31855 integrated circuit addresses these challenges by providing amplification, cold-junction compensation, and digital output via SPI [2]. This work demonstrates how to interface this device with the RP2040 microcontroller using Rust's embedded ecosystem.
+The MAX31855 integrated circuit addresses these challenges by providing amplification, cold-junction compensation, and digital output via SPI [2]. This post demonstrates how to interface this device with the RP2040 microcontroller using Rust's embedded ecosystem.
 
 ### Contributions
 
-This paper makes the following contributions:
+In this post, I cover the following:
 
 - A complete, production-ready implementation of MAX31855 interfacing on RP2040
 - A platform-agnostic driver using `embedded-hal` 1.0 traits
@@ -306,12 +304,14 @@ pub struct TempReading {
 
 The fault detection logic examines the lower 3 bits of the 32-bit response:
 
-$$\text{Fault} = \begin{cases}
+$$
+\text{Fault} = \begin{cases}
 \text{OpenCircuit} & \text{if } D_0 = 1 \\
 \text{ShortToGnd} & \text{if } D_1 = 1 \\
 \text{ShortToVcc} & \text{if } D_2 = 1 \\
 \text{None} & \text{otherwise}
-\end{cases}$$
+\end{cases}
+$$
 
 ## V. Experimental Results
 
@@ -407,7 +407,7 @@ cp firmware.uf2 /Volumes/RPI-RP2/
 
 ## VII. Conclusion
 
-This work presented a complete implementation of thermocouple temperature sensing on the RP2040 microcontroller using Rust. The key achievements include:
+This post presented a complete implementation of thermocouple temperature sensing on the RP2040 microcontroller using Rust. The key achievements include:
 
 1. **Platform-agnostic driver**: The MAX31855 driver uses `embedded-hal` traits, enabling reuse across different microcontroller platforms
 2. **Remote update capability**: The BOOTSEL command enables firmware updates without physical access

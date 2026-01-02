@@ -41,6 +41,60 @@
   color: #ff6b6b;
 }
 
+/* Ensure mermaid SVG text is visible */
+.mermaid-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-container .node rect,
+.mermaid-container .node polygon,
+.mermaid-container .node circle,
+.mermaid-container .node ellipse {
+  fill: #dbeafe !important;
+  stroke: #3b82f6 !important;
+}
+
+.mermaid-container .nodeLabel,
+.mermaid-container .label,
+.mermaid-container text,
+.mermaid-container .edgeLabel {
+  fill: #1f2937 !important;
+  color: #1f2937 !important;
+}
+
+.mermaid-container .edgePath .path {
+  stroke: #4b5563 !important;
+}
+
+.mermaid-container marker path {
+  fill: #4b5563 !important;
+}
+
+.dark .mermaid-container .node rect,
+.dark .mermaid-container .node polygon,
+.dark .mermaid-container .node circle,
+.dark .mermaid-container .node ellipse {
+  fill: #374151 !important;
+  stroke: #60a5fa !important;
+}
+
+.dark .mermaid-container .nodeLabel,
+.dark .mermaid-container .label,
+.dark .mermaid-container text,
+.dark .mermaid-container .edgeLabel {
+  fill: #e5e7eb !important;
+  color: #e5e7eb !important;
+}
+
+.dark .mermaid-container .edgePath .path {
+  stroke: #9ca3af !important;
+}
+
+.dark .mermaid-container marker path {
+  fill: #9ca3af !important;
+}
+
 .math-display {
   @apply block my-6 overflow-x-auto;
 }
