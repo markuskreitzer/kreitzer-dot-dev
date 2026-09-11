@@ -1,6 +1,7 @@
-import type { Metadata } from 'next'
-import './globals.css'
-import { siteConfig } from '@/lib/config'
+import type { Metadata } from "next";
+import "./globals.css";
+import "./workshop.css";
+import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: {
@@ -8,29 +9,35 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.site.title}`,
   },
   description: siteConfig.site.description,
-  generator: 'Next.js',
+  generator: "Next.js",
   metadataBase: new URL(siteConfig.site.url),
   authors: [{ name: siteConfig.user.name }],
   creator: siteConfig.user.name,
   publisher: siteConfig.user.name,
-  keywords: ['software engineer', 'web development', 'full-stack', 'blog', 'portfolio'],
+  keywords: [
+    "software engineer",
+    "web development",
+    "full-stack",
+    "blog",
+    "portfolio",
+  ],
   alternates: {
-    canonical: '/',
+    canonical: "/",
   },
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
+    type: "website",
+    locale: "en_US",
     url: siteConfig.site.url,
     title: siteConfig.site.title,
     description: siteConfig.site.description,
     siteName: siteConfig.site.title,
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: siteConfig.site.title,
     description: siteConfig.site.description,
-    creator: siteConfig.contact.twitter || '@markuskreitzer',
-    site: siteConfig.contact.twitter || '@markuskreitzer',
+    creator: siteConfig.contact.twitter || "@markuskreitzer",
+    site: siteConfig.contact.twitter || "@markuskreitzer",
   },
   robots: {
     index: true,
@@ -38,17 +45,17 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -59,16 +66,18 @@ export default function RootLayout({
           title={`${siteConfig.site.title} RSS Feed`}
           href={`${siteConfig.site.url}/feed.xml`}
         />
-        {/* KaTeX CSS for math rendering */}
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
           crossOrigin="anonymous"
         />
-        {/* Analytics Placeholder - See lib/analytics.ts for setup instructions */}
-        {/* Uncomment and configure your preferred analytics solution */}
       </head>
-      <body>{children}</body>
+      <body>
+        <a className="skip-link" href="#main-content">
+          Skip to content
+        </a>
+        {children}
+      </body>
     </html>
-  )
+  );
 }

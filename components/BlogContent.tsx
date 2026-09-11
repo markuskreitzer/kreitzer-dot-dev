@@ -1,32 +1,48 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { MermaidDiagram } from './MermaidDiagram';
+import React from "react";
+import { MermaidDiagram } from "./MermaidDiagram";
 
 interface BlogContentProps {
   content: string;
 }
 
 export function BlogContent({ content }: BlogContentProps) {
-  const [processedContent, setProcessedContent] = React.useState<React.ReactNode[]>([]);
+  const [processedContent, setProcessedContent] = React.useState<
+    React.ReactNode[]
+  >([]);
 
   React.useEffect(() => {
     // Parse HTML and replace mermaid placeholders with React components
-    const tempDiv = document.createElement('div');
+    const tempDiv = document.createElement("div");
     tempDiv.innerHTML = content;
 
     const elements: React.ReactNode[] = [];
     let elementIndex = 0;
 
     // Elements that cannot have whitespace-only text nodes as children
-    const noWhitespaceElements = ['table', 'thead', 'tbody', 'tfoot', 'tr', 'colgroup'];
+    const noWhitespaceElements = [
+      "table",
+      "thead",
+      "tbody",
+      "tfoot",
+      "tr",
+      "colgroup",
+    ];
 
     // Process all child nodes, replacing mermaid placeholders with components
-    const processNode = (node: Node, parentTagName?: string): React.ReactNode => {
+    const processNode = (
+      node: Node,
+      parentTagName?: string,
+    ): React.ReactNode => {
       if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.textContent || '';
+        const text = node.textContent || "";
         // Filter out whitespace-only text nodes inside table elements
-        if (parentTagName && noWhitespaceElements.includes(parentTagName) && !text.trim()) {
+        if (
+          parentTagName &&
+          noWhitespaceElements.includes(parentTagName) &&
+          !text.trim()
+        ) {
           return null;
         }
         return text;
@@ -37,8 +53,8 @@ export function BlogContent({ content }: BlogContentProps) {
         const tagName = element.tagName.toLowerCase();
 
         // Handle mermaid placeholders
-        if (element.classList.contains('mermaid-placeholder')) {
-          const mermaidData = element.getAttribute('data-mermaid');
+        if (element.classList.contains("mermaid-placeholder")) {
+          const mermaidData = element.getAttribute("data-mermaid");
           if (mermaidData) {
             const diagram = decodeURIComponent(mermaidData);
             return (
@@ -54,20 +70,22 @@ export function BlogContent({ content }: BlogContentProps) {
 
         // Build props from attributes
         const props: Record<string, unknown> = { key: `el-${elementIndex++}` };
-        Array.from(element.attributes).forEach(attr => {
+        Array.from(element.attributes).forEach((attr) => {
           // Convert HTML attributes to React props
           let propName = attr.name;
-          if (propName === 'class') propName = 'className';
-          if (propName === 'for') propName = 'htmlFor';
+          if (propName === "class") propName = "className";
+          if (propName === "for") propName = "htmlFor";
 
           // Convert style string to React style object
-          if (propName === 'style') {
+          if (propName === "style") {
             const styleObj: Record<string, string> = {};
-            attr.value.split(';').forEach(rule => {
-              const [property, value] = rule.split(':').map(s => s.trim());
+            attr.value.split(";").forEach((rule) => {
+              const [property, value] = rule.split(":").map((s) => s.trim());
               if (property && value) {
                 // Convert CSS property to camelCase (e.g., background-color -> backgroundColor)
-                const camelCase = property.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+                const camelCase = property.replace(/-([a-z])/g, (_, letter) =>
+                  letter.toUpperCase(),
+                );
                 styleObj[camelCase] = value;
               }
             });
@@ -79,22 +97,40 @@ export function BlogContent({ content }: BlogContentProps) {
 
         // Process children recursively, passing current tag name for whitespace filtering
         const children = Array.from(element.childNodes)
-          .map(child => processNode(child, tagName))
-          .filter(child => child !== null && child !== '');
+          .map((child) => processNode(child, tagName))
+          .filter((child) => child !== null && child !== "");
 
         // Handle self-closing tags
-        if (['br', 'hr', 'img', 'input', 'meta', 'link'].includes(tagName)) {
+        if (["br", "hr", "img", "input", "meta", "link"].includes(tagName)) {
           return React.createElement(tagName, props);
         }
 
-        return React.createElement(tagName, props, children.length > 0 ? children : undefined);
+        const rendered = React.createElement(
+          tagName,
+          props,
+          children.length > 0 ? children : undefined,
+        );
+        if (tagName === "table") {
+          return (
+            <div
+              key={`table-${elementIndex++}`}
+              className="overflow-x-auto"
+              role="region"
+              aria-label="Scrollable data table"
+              tabIndex={0}
+            >
+              {rendered}
+            </div>
+          );
+        }
+        return rendered;
       }
 
       return null;
     };
 
     const processedElements = Array.from(tempDiv.childNodes)
-      .map(child => processNode(child))
+      .map((child) => processNode(child))
       .filter(Boolean);
 
     setProcessedContent(processedElements);

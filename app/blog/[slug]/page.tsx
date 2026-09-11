@@ -1,14 +1,13 @@
-import React from 'react';
-import { notFound } from 'next/navigation';
-import { Metadata } from 'next';
-import { getPost, getAllPosts } from '@/lib/blog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
-import { BlogContent } from '@/components/BlogContent';
-import { ShareButtons } from '@/components/ShareButtons';
-import { siteConfig } from '@/lib/config';
-import { Clock } from 'lucide-react';
+import React from "react";
+import { notFound } from "next/navigation";
+import { Metadata } from "next";
+import { getPost, getAllPosts } from "@/lib/blog";
+import { WorkshopNav } from "@/components/WorkshopNav";
+import { Badge } from "@/components/ui/badge";
+import { BlogContent } from "@/components/BlogContent";
+import { ShareButtons } from "@/components/ShareButtons";
+import { siteConfig } from "@/lib/config";
+import { Clock } from "lucide-react";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -16,13 +15,15 @@ interface BlogPostPageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPost(slug);
 
   if (!post) {
     return {
-      title: 'Post Not Found',
+      title: "Post Not Found",
     };
   }
 
@@ -30,9 +31,9 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const authorName = siteConfig.user.name;
 
   return {
-    title: `${post.title} | ${siteConfig.site.title}`,
+    title: post.title,
     description: post.description,
-    keywords: post.tags.join(', '),
+    keywords: post.tags.join(", "),
     authors: [{ name: authorName }],
     creator: authorName,
     publisher: authorName,
@@ -44,18 +45,18 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       description: post.description,
       url,
       siteName: siteConfig.site.title,
-      locale: 'en_US',
-      type: 'article',
+      locale: "en_US",
+      type: "article",
       publishedTime: post.date,
       authors: [authorName],
       tags: post.tags,
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: post.title,
       description: post.description,
-      creator: siteConfig.contact.twitter || '@markuskreitzer',
-      site: siteConfig.contact.twitter || '@markuskreitzer',
+      creator: siteConfig.contact.twitter || "@markuskreitzer",
+      site: siteConfig.contact.twitter || "@markuskreitzer",
     },
     robots: {
       index: true,
@@ -63,9 +64,9 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       googleBot: {
         index: true,
         follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
       },
     },
   };
@@ -90,27 +91,27 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const authorName = siteConfig.user.name;
 
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
     datePublished: post.date,
     dateModified: post.date,
     author: {
-      '@type': 'Person',
+      "@type": "Person",
       name: authorName,
       url: siteConfig.site.url,
     },
     publisher: {
-      '@type': 'Person',
+      "@type": "Person",
       name: authorName,
     },
     url,
     mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': url,
+      "@type": "WebPage",
+      "@id": url,
     },
-    keywords: post.tags.join(', '),
+    keywords: post.tags.join(", "),
   };
 
   return (
@@ -119,33 +120,21 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-
-      {/* Navigation */}
-      <nav className="py-4 bg-card border-b border-border">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold cursor-pointer">
-            {siteConfig.user.name}
-          </Link>
-          <div className="flex gap-6 items-center">
-            <Link href="/">
-              <Button variant="ghost" className="transition-colors duration-300">
-                ← Back to Home
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* Blog Post Content */}
-      <article className="container mx-auto px-4 py-16 max-w-4xl">
+      <div className="workshop blog-navigation">
+        <WorkshopNav />
+      </div>
+      <article
+        id="main-content"
+        className="container mx-auto px-4 py-16 max-w-4xl"
+      >
         <header className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">{post.title}</h1>
           <div className="flex flex-wrap items-center gap-3 text-muted-foreground mb-4">
             <time dateTime={post.date}>
-              {new Date(post.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+              {new Date(post.date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
               })}
             </time>
             {post.readingTime && (
@@ -176,21 +165,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </header>
 
         <div className="prose prose-lg max-w-none dark:prose-invert mb-12">
-          <BlogContent content={post.content || ''} />
+          <BlogContent content={post.content || ""} />
         </div>
-
-        {/* Share buttons at bottom */}
         <div className="border-t border-border pt-8">
           <h3 className="text-lg font-semibold mb-4">Share this article</h3>
           <ShareButtons title={post.title} slug={post.slug} />
         </div>
       </article>
-
-      {/* Footer */}
       <footer className="py-6 mt-12 bg-card border-t border-border">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground">
-            &copy; {new Date().getFullYear()} {siteConfig.user.name}. All rights reserved.
+            &copy; {new Date().getFullYear()} {siteConfig.user.name}. All rights
+            reserved.
           </p>
         </div>
       </footer>

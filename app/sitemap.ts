@@ -1,24 +1,19 @@
-import { MetadataRoute } from 'next';
-import { getAllPosts } from '@/lib/blog';
-import { siteConfig } from '@/lib/config';
+import { MetadataRoute } from "next";
+import { getAllPosts } from "@/lib/blog";
+import { featuredProjects } from "@/lib/projects";
+import { siteConfig } from "@/lib/config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getAllPosts();
-
-  const blogPosts = posts.map((post) => ({
-    url: `${siteConfig.site.url}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
-  }));
-
   return [
-    {
-      url: siteConfig.site.url,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1,
-    },
-    ...blogPosts,
+    ...["", "/work", "/about", "/blog"].map((route) => ({
+      url: `${siteConfig.site.url}${route}`,
+    })),
+    ...featuredProjects.map((project) => ({
+      url: `${siteConfig.site.url}/work/${project.slug}`,
+    })),
+    ...getAllPosts().map((post) => ({
+      url: `${siteConfig.site.url}/blog/${post.slug}`,
+      lastModified: new Date(post.date),
+    })),
   ];
 }

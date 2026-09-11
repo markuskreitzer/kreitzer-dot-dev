@@ -1,34 +1,77 @@
-"use client"
+"use client";
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { BookOpen, ChevronRight, Github, Linkedin, Mail, Twitter, MessageCircle, Sun, Moon, User } from 'lucide-react';
-import { siteConfig, getUserName, getUserDescription } from '@/lib/config';
-import { getAllPosts, BlogPost } from '@/lib/blogClient';
-import { useRouter } from 'next/navigation';
-import { MobileMenu } from '@/components/MobileMenu';
-import { Analytics } from "@vercel/analytics/next"
+import React, { useState, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import {
+  BookOpen,
+  ChevronRight,
+  Github,
+  Linkedin,
+  Mail,
+  Twitter,
+  MessageCircle,
+  Sun,
+  Moon,
+  User,
+} from "lucide-react";
+import { siteConfig, getUserName, getUserDescription } from "@/lib/config";
+import { getAllPosts, BlogPost } from "@/lib/blogClient";
+import { useRouter } from "next/navigation";
+import { MobileMenu } from "@/components/MobileMenu";
+import { Analytics } from "@vercel/analytics/next";
 
 // Helper Components
-const AnimatedHeading = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+const AnimatedHeading = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
   <motion.h1
     initial={{ opacity: 0, y: -20 }}
-    animate={{ opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeInOut' } }}
-    className={cn('text-4xl sm:text-5xl md:text-6xl font-bold mb-4 drop-shadow-lg', className)}
+    animate={{
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeInOut" },
+    }}
+    className={cn(
+      "text-4xl sm:text-5xl md:text-6xl font-bold mb-4 drop-shadow-lg",
+      className,
+    )}
   >
     {children}
   </motion.h1>
 );
 
-const AnimatedParagraph = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+const AnimatedParagraph = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
   <motion.p
     initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeInOut', delay: 0.2 } }}
-    className={cn('text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto', className)}
+    animate={{
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeInOut", delay: 0.2 },
+    }}
+    className={cn(
+      "text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto",
+      className,
+    )}
   >
     {children}
   </motion.p>
@@ -53,7 +96,10 @@ const AnimatedLink = ({
     rel="noopener noreferrer"
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
-    className={cn('transition-colors duration-300 inline-flex items-center gap-2', className)}
+    className={cn(
+      "transition-colors duration-300 inline-flex items-center gap-2",
+      className,
+    )}
     {...props}
   >
     {Icon && <Icon className="w-5 h-5" />}
@@ -61,10 +107,11 @@ const AnimatedLink = ({
   </motion.a>
 );
 
-
-
 // Page Components
-const HomePage = ({ isDarkMode, userName }: {
+const HomePage = ({
+  isDarkMode,
+  userName,
+}: {
   isDarkMode: boolean;
   userName: string;
 }) => {
@@ -77,7 +124,7 @@ const HomePage = ({ isDarkMode, userName }: {
         const posts = await getAllPosts();
         setBlogPosts(posts.slice(0, 3));
       } catch (error) {
-        console.error('Error loading blog posts:', error);
+        console.error("Error loading blog posts:", error);
       }
     };
     loadPosts();
@@ -86,22 +133,31 @@ const HomePage = ({ isDarkMode, userName }: {
   return (
     <div className="container mx-auto px-4 py-16 md:py-24">
       <div className="text-center">
-        <AnimatedHeading className={isDarkMode ? "text-foreground" : "text-foreground"}>
-          Hi, I'm <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">{userName}</span>
+        <AnimatedHeading
+          className={isDarkMode ? "text-foreground" : "text-foreground"}
+        >
+          Hi, I&apos;m{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
+            {userName}
+          </span>
         </AnimatedHeading>
         <AnimatedParagraph className="text-muted-foreground">
           {getUserDescription()}
         </AnimatedParagraph>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeInOut', delay: 0.4 } }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.6, ease: "easeInOut", delay: 0.4 },
+          }}
           className="mt-8 flex flex-col sm:flex-row justify-center gap-4"
         >
           <Button
             variant="outline"
             size="lg"
             className="transition-all duration-300 hover:scale-105"
-            onClick={() => router.push('/about')}
+            onClick={() => router.push("/about")}
           >
             <User className="mr-2 h-5 w-5" />
             About Me
@@ -110,7 +166,7 @@ const HomePage = ({ isDarkMode, userName }: {
             variant="outline"
             size="lg"
             className="transition-all duration-300 hover:scale-105"
-            onClick={() => router.push('/work')}
+            onClick={() => router.push("/work")}
           >
             <BookOpen className="mr-2 h-5 w-5" />
             My Work
@@ -130,18 +186,29 @@ const HomePage = ({ isDarkMode, userName }: {
                 onClick={() => router.push(`/blog/${post.slug}`)}
               >
                 <CardHeader>
-                  <CardTitle className="text-lg font-semibold">{post.title}</CardTitle>
-                  <CardDescription className="line-clamp-3">{post.description}</CardDescription>
+                  <CardTitle className="text-lg font-semibold">
+                    {post.title}
+                  </CardTitle>
+                  <CardDescription className="line-clamp-3">
+                    {post.description}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2 mb-4">
                     {post.tags.slice(0, 3).map((tag, tagIndex) => (
-                      <Badge key={tagIndex} variant="secondary" className="text-xs">
+                      <Badge
+                        key={tagIndex}
+                        variant="secondary"
+                        className="text-xs"
+                      >
                         {tag}
                       </Badge>
                     ))}
                   </div>
-                  <Button variant="ghost" className="p-0 h-auto text-primary hover:text-primary/80">
+                  <Button
+                    variant="ghost"
+                    className="p-0 h-auto text-primary hover:text-primary/80"
+                  >
                     Read More <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 </CardContent>
@@ -152,16 +219,36 @@ const HomePage = ({ isDarkMode, userName }: {
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeInOut', delay: 0.6 } }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.6, ease: "easeInOut", delay: 0.6 },
+          }}
           className="mt-12 flex justify-center gap-6"
         >
-          <AnimatedLink href={siteConfig.contact.github} icon={Github} className="text-muted-foreground hover:text-primary" />
-          <AnimatedLink href={siteConfig.contact.linkedin} icon={Linkedin} className="text-muted-foreground hover:text-primary" />
+          <AnimatedLink
+            href={siteConfig.contact.github}
+            icon={Github}
+            className="text-muted-foreground hover:text-primary"
+          />
+          <AnimatedLink
+            href={siteConfig.contact.linkedin}
+            icon={Linkedin}
+            className="text-muted-foreground hover:text-primary"
+          />
           {siteConfig.contact.twitter && (
-            <AnimatedLink href={siteConfig.contact.twitter} icon={Twitter} className="text-muted-foreground hover:text-primary" />
+            <AnimatedLink
+              href={siteConfig.contact.twitter}
+              icon={Twitter}
+              className="text-muted-foreground hover:text-primary"
+            />
           )}
           {siteConfig.contact.email && (
-            <AnimatedLink href={`mailto:${siteConfig.contact.email}`} icon={Mail} className="text-muted-foreground hover:text-primary" />
+            <AnimatedLink
+              href={`mailto:${siteConfig.contact.email}`}
+              icon={Mail}
+              className="text-muted-foreground hover:text-primary"
+            />
           )}
         </motion.div>
       </div>
@@ -180,7 +267,7 @@ const BlogPage = () => {
         const posts = await getAllPosts();
         setBlogPosts(posts);
       } catch (error) {
-        console.error('Error loading blog posts:', error);
+        console.error("Error loading blog posts:", error);
       } finally {
         setLoading(false);
       }
@@ -191,36 +278,51 @@ const BlogPage = () => {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-16 md:py-24">
-        <div className="text-center text-muted-foreground">Loading posts...</div>
+        <div className="text-center text-muted-foreground">
+          Loading posts...
+        </div>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto px-4 py-16 md:py-24">
-      <AnimatedHeading className="text-center mb-12">
-        My Blog
-      </AnimatedHeading>
+      <AnimatedHeading className="text-center mb-12">My Blog</AnimatedHeading>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {blogPosts.map((post, index) => (
           <motion.div
             key={post.slug}
             initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeInOut', delay: 0.2 + index * 0.1 } }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              transition: {
+                duration: 0.5,
+                ease: "easeInOut",
+                delay: 0.2 + index * 0.1,
+              },
+            }}
           >
-            <Card className="transition-all duration-300 hover:shadow-lg cursor-pointer" onClick={() => router.push(`/blog/${post.slug}`)}>
+            <Card
+              className="transition-all duration-300 hover:shadow-lg cursor-pointer"
+              onClick={() => router.push(`/blog/${post.slug}`)}
+            >
               <CardHeader>
-                <CardTitle className="text-xl font-semibold">{post.title}</CardTitle>
+                <CardTitle className="text-xl font-semibold">
+                  {post.title}
+                </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  {new Date(post.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                  {new Date(post.date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground mb-4 line-clamp-3">{post.description}</p>
+                <p className="text-muted-foreground mb-4 line-clamp-3">
+                  {post.description}
+                </p>
                 <div className="mb-4">
                   {post.tags.slice(0, 3).map((tag, index) => (
                     <Badge key={index} variant="secondary" className="mr-2">
@@ -228,7 +330,10 @@ const BlogPage = () => {
                     </Badge>
                   ))}
                 </div>
-                <Button variant="ghost" className="text-primary hover:text-primary/80 p-0 h-auto">
+                <Button
+                  variant="ghost"
+                  className="text-primary hover:text-primary/80 p-0 h-auto"
+                >
                   Read More <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </CardContent>
@@ -240,33 +345,32 @@ const BlogPage = () => {
   );
 };
 
-
 // Main App Component
 const App = () => {
-  const [activeTab, setActiveTab] = useState<'home' | 'blog'>('home');
+  const [activeTab, setActiveTab] = useState<"home" | "blog">("home");
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [userName, setUserName] = useState<string>(getUserName());
 
-  const handleTabChange = useCallback((tab: 'home' | 'blog') => {
+  const handleTabChange = useCallback((tab: "home" | "blog") => {
     setActiveTab(tab);
   }, []);
 
   const toggleDarkMode = () => {
-    setIsDarkMode(prev => !prev);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('darkMode', JSON.stringify(!isDarkMode));
+    setIsDarkMode((prev) => !prev);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("darkMode", JSON.stringify(!isDarkMode));
       const root = document.documentElement;
-      root.classList.toggle('dark', !isDarkMode);
+      root.classList.toggle("dark", !isDarkMode);
     }
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedDarkMode = localStorage.getItem('darkMode');
+    if (typeof window !== "undefined") {
+      const storedDarkMode = localStorage.getItem("darkMode");
       if (storedDarkMode) {
         const darkModeValue = JSON.parse(storedDarkMode);
         setIsDarkMode(darkModeValue);
-        document.documentElement.classList.toggle('dark', darkModeValue);
+        document.documentElement.classList.toggle("dark", darkModeValue);
       }
     }
   }, []);
@@ -280,7 +384,10 @@ const App = () => {
       {/* Navbar */}
       <nav className="py-4 bg-card border-b border-border">
         <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="text-2xl font-bold cursor-pointer" onClick={() => handleTabChange('home')}>
+          <div
+            className="text-2xl font-bold cursor-pointer"
+            onClick={() => handleTabChange("home")}
+          >
             {userName}
           </div>
 
@@ -289,39 +396,47 @@ const App = () => {
             <Button
               variant="ghost"
               className={cn(
-                'transition-colors duration-300',
-                activeTab === 'home' && 'border-b-2 border-orange-600'
+                "transition-colors duration-300",
+                activeTab === "home" && "border-b-2 border-orange-600",
               )}
-              onClick={() => handleTabChange('home')}
+              onClick={() => handleTabChange("home")}
             >
               Home
             </Button>
             <Button
               variant="ghost"
               className={cn(
-                'transition-colors duration-300',
-                activeTab === 'blog' && 'border-b-2 border-orange-600'
+                "transition-colors duration-300",
+                activeTab === "blog" && "border-b-2 border-orange-600",
               )}
-              onClick={() => handleTabChange('blog')}
+              onClick={() => handleTabChange("blog")}
             >
               Blog
             </Button>
             <Button
               variant="ghost"
-              onClick={() => window.open(siteConfig.site.chatUrl, '_blank')}
+              onClick={() => window.open(siteConfig.site.chatUrl, "_blank")}
             >
               <MessageCircle className="h-5 w-5 mr-2" />
               Chat
             </Button>
             <Button variant="ghost" onClick={toggleDarkMode}>
-              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              {isDarkMode ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
             </Button>
           </div>
 
           {/* Mobile Navigation */}
           <div className="flex md:hidden gap-2 items-center">
             <Button variant="ghost" onClick={toggleDarkMode}>
-              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              {isDarkMode ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
             </Button>
             <MobileMenu />
           </div>
@@ -329,8 +444,8 @@ const App = () => {
       </nav>
 
       {/* Main Content Area */}
-      <AnimatePresence mode='wait'>
-        {activeTab === 'home' && (
+      <AnimatePresence mode="wait">
+        {activeTab === "home" && (
           <motion.div
             key="home"
             initial={{ opacity: 0 }}
@@ -340,7 +455,7 @@ const App = () => {
             <HomePage isDarkMode={isDarkMode} userName={userName} />
           </motion.div>
         )}
-        {activeTab === 'blog' && (
+        {activeTab === "blog" && (
           <motion.div
             key="blog"
             initial={{ opacity: 0 }}
