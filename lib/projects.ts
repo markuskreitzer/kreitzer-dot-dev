@@ -105,17 +105,6 @@ export const projects: Project[] = [
     ],
   },
   {
-    slug: "gitlab-mcp",
-    title: "GitLab tools for AI clients",
-    category: "AI and developer tools",
-    summary: "An MCP server for working with GitLab from AI tooling.",
-    contribution: "Repository owner and developer.",
-    status: "Open source",
-    technologies: ["Python", "MCP", "GitLab"],
-    source: "https://github.com/nostoslabs/gitlab-mcp",
-    sections: [],
-  },
-  {
     slug: "image-gen",
     title: "Image generation experiments",
     category: "AI and developer tools",
