@@ -4,6 +4,7 @@ export interface Project {
   category:
     "AI and developer tools" | "Instrumentation" | "Applications" | "Research";
   summary: string;
+  introduction?: string[];
   contribution: string;
   status: string;
   technologies: string[];
@@ -25,24 +26,20 @@ export const projects: Project[] = [
     status: "Prototype",
     technologies: ["Python", "FastMCP", "PicoSDK"],
     source: "https://github.com/markuskreitzer/picoscope_mcp",
+    introduction: [
+      "PicoScope oscilloscopes connect to a computer over USB. An AI assistant can help write code for an experiment, but working with the instrument also requires a way to configure it and retrieve its samples. This project provides that connection through the Model Context Protocol (MCP).",
+      "I built a Python server between the assistant and PicoSDK, the library that controls the scope. The assistant can request operations such as selecting a channel, setting a trigger, and capturing a waveform. The server translates those requests into calls to the instrument library."
+],
     sections: [
       {
-        title: "Instrument control",
-        body: "The server gives an AI client separate tools to find an instrument, connect to it, configure channels and triggers, and capture a block of samples. Each step has explicit parameters so the client can inspect and change the setup.",
+            "title": "From a request to a waveform",
+            "body": "A capture involves several decisions before any samples come back: which device to connect to, which channel to enable, what voltage range to use, and when to trigger. I exposed these as separate operations so the assistant can configure the measurement explicitly. The block-capture path then returns the sampled waveform for inspection."
       },
       {
-        title: "Implementation",
-        body: "MCP requests become typed configuration objects and PicoSDK calls. A capture starts with a device connection, followed by channel and trigger setup. The block-acquisition path returns waveform samples for the client to inspect.",
-      },
-      {
-        title: "Acquisition support",
-        body: "Configuration and block acquisition are implemented. Running them requires a compatible PicoScope and the native PicoSDK libraries. The basic tests check server behavior; acquisition still needs to be checked against the connected instrument.",
-      },
-      {
-        title: "Limits",
-        body: "Streaming is unfinished. The frequency and amplitude tools return instructions, not measurements. FFT, THD, and rise-time tools are placeholders. Those limits make this a prototype; a client should not treat those tool responses as calculated results.",
-      },
-    ],
+            "title": "What is implemented",
+            "body": "Device configuration and block acquisition have implementation paths, but they still need validation with the connected scope and its native SDK. Streaming is unfinished. Several analysis tools, including FFT, THD, and rise time, are placeholders; the frequency and amplitude tools currently return instructions rather than calculated measurements. The project is a prototype of the instrument connection, with more work needed before an assistant can rely on it for a complete measurement."
+      }
+],
   },
   {
     slug: "ryobi-moisture-meter",
@@ -59,24 +56,24 @@ export const projects: Project[] = [
     status: "Experimental hardware tool",
     technologies: ["Python", "NumPy", "FFmpeg", "Signal processing"],
     source: "https://github.com/markuskreitzer/ryobi-moisture-meter",
+    introduction: [
+      "The Ryobi ES3000 is a moisture meter from the Phone Works range. Its pins go into the material being measured, but the reading appears in a phone app. The meter connects through the phone’s headphone jack, using audio signals to communicate with the app.",
+      "I worked out how to request and decode those readings from a Mac. The starting points were the meter’s manual and an archived Android app. Decompiling the app exposed the request audio, the pulse decoder, and the tables used to turn a raw reading into a displayed moisture percentage."
+],
     sections: [
       {
-        title: "Audio protocol",
-        body: "The ES3000 uses a phone’s audio connection for communication. To request a reading, the software sends a 2.2 kHz excitation tone and short bursts. The meter replies with a train of pulses that can be recorded as audio.",
+            "title": "Reconstructing the exchange",
+            "body": "The request uses both stereo channels: a continuous 2.2 kHz square wave on the left and short request bursts on the right. The meter sends a pulse train back through the microphone input. Reproducing both parts of the request let me generate the tone in Python and decode the reply without running the phone app."
       },
       {
-        title: "Decoding",
-        body: "The Python tools generate the request and record the response. The decoder finds candidate frames, extracts the raw moisture value, and looks it up in the original material-group table. Repeated captures can be combined, and the log can include a reference meter reading for comparison.",
+            "title": "Turning pulses into a reading",
+            "body": "The decoder looks for a frame prefix, extracts the device identifier and moisture payload, and applies the app’s conversion table for the selected material. The material choice matters because the same raw value can map to different percentages. I kept WAV captures so I could work on the decoder and replay the same input without taking another physical measurement."
       },
       {
-        title: "Sample captures",
-        body: "The repository includes WAV files that can be decoded without attaching a meter. The wood recording yields two valid frames with raw value 6. For material group 1, the original conversion table maps that value to 0.0%.",
-      },
-      {
-        title: "Limits",
-        body: "Decoding a valid frame checks the communication path. Measurement accuracy needs a separate comparison against a reference, with the material and contact conditions recorded. Audio hardware and calibration can affect the result.",
-      },
-    ],
+            "title": "Checking that contact changed the response",
+            "body": "Air and the tested dry wood both returned a raw value of 6, which the hardwood table displays as 0.0%. A wet finger across the pins returned 26–27, and a damp cloth returned 19. Those observations showed that probe contact changed the response, although the wood result could still reflect poor contact or the bottom of the app’s display range. Establishing moisture accuracy requires paired readings against a reference meter; the logging tool can save those comparisons alongside the captures."
+      }
+],
   },
   {
     slug: "coffee-detector",
@@ -89,20 +86,24 @@ export const projects: Project[] = [
     status: "Personal automation",
     technologies: ["Python", "NumPy", "FFmpeg", "Audio"],
     source: "https://github.com/markuskreitzer/coffee_detector",
+    introduction: [
+      "A first-generation Hottop coffee roaster sounds a sequence of beeps when it has warmed up and is ready for beans. This project listens for that signal through a microphone and sends a Pushover notification to a phone.",
+      "The Python version runs on a computer with an audio input. It checks both the pitch and timing of the sound: the target is near 4.10 kHz, and three beeps must arrive with the expected spacing before it sends an alert. That gives the detector more to work with than the presence of a single high-pitched sound."
+],
     sections: [
       {
-        title: "Beep detection",
-        body: "The target tone is near 4.10 kHz. A tone at that frequency alone is not enough: the detector waits for three beeps with the expected timing before reporting that the roaster is ready.",
+            "title": "Getting the microphone to stay connected",
+            "body": "On the ASUS X202E laptop used for the Linux setup, starting a capture stream caused PipeWire to restore the internal microphone route, even though an external microphone was plugged into the combo jack. The service now waits for capture to start and then selects the external input. It also checks for missing frames and sustained digital silence, so a running process with a dead audio input does not quietly appear healthy."
       },
       {
-        title: "Testing",
-        body: "A dry run feeds a reference recording through the detector without sending an alert. The input checks report missing audio frames and sustained digital silence. A tone diagnostic shows the received frequency and its level relative to the background, which helps when placing the microphone.",
+            "title": "Replaying the roaster’s signal",
+            "body": "I kept a reference recording of the warm-up beeps so the detector could be checked without heating the roaster for each run. Dry-run mode processes that recording without sending a notification. Live input has a separate diagnostic that reports the strongest frequency and the target tone’s level relative to the background; that helps distinguish a detection problem from a microphone or level problem."
       },
       {
-        title: "Limits",
-        body: "The detector recognizes this roaster’s warm-up signal. It does not identify first crack, second crack, or cooling. Pushover notifications need credentials supplied by the person running it. The code uses the PolyForm Noncommercial license.",
-      },
-    ],
+            "title": "Running on an ESP32",
+            "body": "The repository also contains firmware for an ESP32-WROOM-32 with an INMP441 microphone. It detects the warm-up signal and sends the notification over Wi-Fi without streaming or storing the audio. Recognizing first crack or second crack would require a different detector; the current work is specifically about the warm-up beeps."
+      }
+],
   },
   {
     slug: "image-gen",

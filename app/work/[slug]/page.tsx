@@ -29,7 +29,11 @@ export default async function CaseStudy({ params }: Props) {
       <main id="main-content" className="workshop-page case-study">
         <Link href="/work">All projects</Link>
         <h1>{project.title}</h1>
-        <p className="page-intro">{project.summary}</p>
+        {project.introduction ? (
+          project.introduction.map((paragraph) => <p key={paragraph}>{paragraph}</p>)
+        ) : (
+          <p className="page-intro">{project.summary}</p>
+        )}
         {project.image && (
           <figure>
             <img
