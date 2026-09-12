@@ -24,9 +24,11 @@ export default function AboutPage() {
         <section>
           <h2>Hands-on engineering and technical leadership</h2>
           <p>
-            At PeopleTec, I work on AI and platform engineering: CI/CD, secure
-            container pipelines, reusable services, identity-aware integration,
-            and developer workflows. I architected and built a full Go application
+            At PeopleTec, I established DevOps practices for several projects.
+            I now lead the team and define delivery requirements and engineering
+            standards, while team members handle most day-to-day DevOps
+            implementation. My work also includes reusable services,
+            identity-aware integration, and developer workflows. I architected and built a full Go application
             and led its development team as technical lead before handing off
             team leadership. I also help teams connect architecture with
             implementation through code review and mentoring.
