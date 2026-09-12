@@ -14,10 +14,9 @@ export default function BlogPage() {
     <div className="workshop">
       <WorkshopNav />
       <main id="main-content" className="workshop-page">
-        <h1>The engineering notebook.</h1>
+        <h1>Writing</h1>
         <p className="page-intro">
-          Ideas, explanations, and observations from working with complex
-          systems.
+          Articles on software, electronics, and research.
         </p>
         <div className="writing-list">
           {posts.map((post) => (

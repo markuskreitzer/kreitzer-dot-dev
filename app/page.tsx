@@ -9,94 +9,48 @@ export default function HomePage() {
   return (
     <div className="workshop">
       <WorkshopNav />
-      <main id="main-content">
-        <section className="workshop-hero">
-          <div>
-            <h1>
-              Software that reaches
-              <br />
-              the workbench.
-            </h1>
-            <p>
-              I’m Markus, an AI and platform engineer. I build developer tools,
-              automate delivery, and connect software to physical systems.
-            </p>
-            <div className="hero-links">
-              <Link href="/work">Explore my work</Link>
-              <Link href="/about">Engineering background</Link>
-            </div>
-          </div>
-          <aside className="bench-note">
-            <h2>On my bench</h2>
-            <img
-              src="/images/ryobi-signal.svg"
-              alt="Recorded pulse train from the Ryobi moisture meter"
-              width={960}
-              height={350}
-              className="bench-waveform"
-            />
-            <p>
-              A moisture meter speaks in pulses. An oscilloscope becomes an AI
-              tool. A coffee roaster asks for beans.
-            </p>
-            <p>Small, tangible problems. Plenty of engineering underneath.</p>
-            <Link href="/work/ryobi-moisture-meter">
-              Inside the moisture-meter project
-            </Link>
-          </aside>
-        </section>
-        <section className="workshop-section automation">
-          <h2>
-            Build it. Automate it.
-            <br />
-            Keep it useful.
-          </h2>
-          <div>
-            <p>
-              My professional work spans AI services, distributed systems, and
-              the tools engineers use to deliver them.
-            </p>
-            <ul>
-              <li>
-                DevSecOps and CI/CD overhaul for an inherited system of{" "}
-                <strong>26 microservices across 89 repositories</strong>.
-              </li>
-              <li>
-                SAST/DAST, SBOM generation, automated builds, and testing.
-              </li>
-              <li>
-                A Kubernetes cluster built from lab desktops, with parallel
-                simulations reducing end-to-end test runs from <strong>seven days to four hours</strong>.
-              </li>
-              <li>
-                A one-click deployment dashboard supporting{" "}
-                <strong>approximately 20 developers</strong>.
-              </li>
-              <li>
-                Java, Python, and Ansible automation; ML pipelines and model
-                evaluation.
-              </li>
-            </ul>
-            <Link href="/about">More about my experience</Link>
-          </div>
-        </section>
+      <main id="main-content" className="home-page">
+        <div className="home-intro">
+          <p>
+            I’m a software engineer in Huntsville, Alabama. I work on AI
+            applications and developer tooling at PeopleTec and am pursuing a
+            PhD in electrical engineering at Auburn.
+          </p>
+          <p>
+            <Link href="/about">More about me</Link>.
+          </p>
+        </div>
         <section className="workshop-section">
           <div className="section-heading">
-            <h2>Selected work</h2>
+            <h1>Projects</h1>
             <Link href="/work">All projects</Link>
           </div>
           <ProjectList items={featuredProjects} />
         </section>
+        <section className="workshop-section experience-summary">
+          <h2>Professional work</h2>
+          <p>
+            At PeopleTec, I architected and built a Go application and led its
+            development team before handing off team leadership. I also
+            established DevOps practices for several projects; I now define
+            requirements and guide the team implementing them.
+          </p>
+          <p>
+            At Valkyrie, I overhauled DevSecOps and CI/CD for 26 microservices
+            across 89 repositories. A Kubernetes cluster I built from lab
+            desktops let us run simulations in parallel, reducing end-to-end
+            testing from seven days to four hours.
+          </p>
+          <Link href="/about">Work history and education</Link>
+        </section>
         <section className="workshop-section">
-          <div className="section-heading">
-            <h2>Applications you can explore</h2>
-          </div>
+          <h2>Applications</h2>
           <ProjectList items={projects.filter((project) => project.demo)} />
         </section>
         <section className="workshop-section">
           <div className="section-heading">
-            <h2>From the notebook</h2>
-            <Link href="/blog">All writing</Link>
+            <h2>Writing</h2>
+            <Link href="/blog">All articles</Link>
           </div>
           <div className="writing-list">
             {posts.map((post) => (
@@ -107,18 +61,16 @@ export default function HomePage() {
                 <h3>
                   <Link href={`/blog/${post.slug}`}>{post.title}</Link>
                 </h3>
-                <p>{post.description}</p>
               </article>
             ))}
           </div>
         </section>
-        <section className="contact-strip">
-          <h2>Let’s talk engineering.</h2>
+        <footer className="contact-strip">
           <a href="https://www.linkedin.com/in/markuskreitzer/">
-            Connect with me on LinkedIn
+            Contact me on LinkedIn
           </a>
           <a href="https://github.com/markuskreitzer">GitHub</a>
-        </section>
+        </footer>
       </main>
     </div>
   );

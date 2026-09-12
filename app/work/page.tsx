@@ -14,14 +14,9 @@ export default function WorkPage() {
     <div className="workshop">
       <WorkshopNav />
       <main id="main-content" className="workshop-page">
-        <h1>
-          From service pipelines
-          <br />
-          to sensor signals.
-        </h1>
+        <h1>Projects</h1>
         <p className="page-intro">
-          Projects from my software practice and personal workbench. Each has a
-          different purpose, maturity, and set of constraints.
+          Software, instrumentation, and applications.
         </p>
         <ProjectList items={projects} />
       </main>

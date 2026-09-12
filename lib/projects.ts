@@ -16,7 +16,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     slug: "picoscope-mcp",
-    title: "An oscilloscope at the end of a conversation",
+    title: "PicoScope MCP",
     category: "Instrumentation",
     summary:
       "A Python MCP interface that connects AI clients to PicoScope configuration and block acquisition.",
@@ -27,15 +27,15 @@ export const projects: Project[] = [
     source: "https://github.com/markuskreitzer/picoscope_mcp",
     sections: [
       {
-        title: "The engineering question",
+        title: "Instrument control",
         body: "Can an AI client work through the same explicit setup steps as a person at a test bench? This project exposes discovery, connection, channel configuration, triggering, and block capture as structured tools.",
       },
       {
-        title: "What I built",
+        title: "Implementation",
         body: "The server maps MCP requests into typed configuration models and PicoSDK calls. A capture workflow connects a device, configures a channel and trigger, then returns sampled waveform data for inspection.",
       },
       {
-        title: "What is established",
+        title: "Acquisition support",
         body: "The implementation contains the configuration and block-acquisition paths. Hardware operation depends on a compatible instrument and native PicoSDK libraries. Hardware acquisition requires validation on the connected instrument.",
       },
       {
@@ -46,7 +46,7 @@ export const projects: Project[] = [
   },
   {
     slug: "ryobi-moisture-meter",
-    title: "Giving a moisture meter its voice back",
+    title: "Ryobi moisture-meter decoder",
     category: "Instrumentation",
     summary:
       "Reconstructing an audio protocol to read a Ryobi ES3000 from a Mac.",
@@ -61,15 +61,15 @@ export const projects: Project[] = [
     source: "https://github.com/markuskreitzer/ryobi-moisture-meter",
     sections: [
       {
-        title: "A useful sensor, an obsolete interface",
+        title: "Audio protocol",
         body: "The ES3000 communicates through a phone audio connection. The work starts with the original read path: a 2.2 kHz excitation tone, short request bursts, and a returning pulse train.",
       },
       {
-        title: "From audio to a reading",
+        title: "Decoding",
         body: "Python generates the request waveform, records the response, finds candidate frames, decodes the moisture payload, and applies the original material-group conversion. Repeated captures can be aggregated, and readings can be logged beside a reference meter value.",
       },
       {
-        title: "Reproducible evidence",
+        title: "Sample captures",
         body: "Curated WAV captures make offline decoding repeatable. The stored wood capture decodes to two valid frames with raw value 6. The original material table maps that value to 0.0% for group 1.",
       },
       {
@@ -80,7 +80,7 @@ export const projects: Project[] = [
   },
   {
     slug: "coffee-detector",
-    title: "Listening for the moment to add the beans",
+    title: "Coffee-roaster beep detector",
     category: "Instrumentation",
     summary:
       "An acoustic monitor for the warm-up beep cadence of a first-generation Hottop coffee roaster.",
@@ -91,11 +91,11 @@ export const projects: Project[] = [
     source: "https://github.com/markuskreitzer/coffee_detector",
     sections: [
       {
-        title: "The event that matters",
+        title: "Beep detection",
         body: "The detector listens for a tone near 4.10 kHz and requires three correctly timed beeps before declaring the roaster ready. Timing helps distinguish the desired event from unrelated sounds.",
       },
       {
-        title: "Making it testable",
+        title: "Testing",
         body: "A reference recording can run through the same detector in dry-run mode. Input health checks detect missing frames and sustained digital silence. A separate tone diagnostic reports the received frequency and target-to-background ratio.",
       },
       {
@@ -117,7 +117,7 @@ export const projects: Project[] = [
   },
   {
     slug: "midpoint",
-    title: "Finding a place to meet",
+    title: "Midpoint Calculator",
     category: "Applications",
     summary: "A web application for exploring a geographic midpoint.",
     contribution: "Application development.",
@@ -182,7 +182,7 @@ export const projects: Project[] = [
   },
   {
     slug: "sensor-research",
-    title: "Sensors, signals, and doctoral research",
+    title: "Doctoral research",
     category: "Research",
     summary:
       "Electrical engineering research spanning IoT sensors, communications, and chaotic systems.",

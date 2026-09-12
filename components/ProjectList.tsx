@@ -7,7 +7,6 @@ export function ProjectList({ items }: { items: Project[] }) {
       {items.map((project) => (
         <article key={project.slug} className="project-entry">
           <div>
-            <p className="project-category">{project.category}</p>
             <h3>
               {project.sections.length ? (
                 <Link href={`/work/${project.slug}`}>{project.title}</Link>
@@ -33,9 +32,9 @@ export function ProjectList({ items }: { items: Project[] }) {
             </p>
             <div className="project-links">
               {project.sections.length > 0 && (
-                <Link href={`/work/${project.slug}`}>Read the case study</Link>
+                <Link href={`/work/${project.slug}`}>Details</Link>
               )}
-              {project.source && <a href={project.source}>Source repository</a>}
+              {project.source && <a href={project.source}>Source</a>}
               {project.demo && <a href={project.demo}>Open application</a>}
             </div>
           </div>
