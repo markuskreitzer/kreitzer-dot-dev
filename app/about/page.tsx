@@ -41,10 +41,13 @@ export default function AboutPage() {
         <section>
           <h2>Automation as part of the product</h2>
           <p>
-            At Valkyrie Enterprises, my work included an 89-service system
-            delivered through GitLab CI/CD on Kubernetes, automated security
-            checks, and ML pipelines with benchmark datasets and typed audit
-            trails. I served as Senior Research Scientist from May 2020 to
+            At Valkyrie Enterprises, I inherited a system of 26 microservices
+            across 89 repositories and overhauled its DevSecOps and GitLab CI/CD:
+            SAST/DAST, SBOM generation, builds, and testing. I built a Kubernetes
+            cluster from the lab’s high-performance desktops and parallelized
+            end-to-end simulations, reducing test runs from seven days to four
+            hours. I also built ML pipelines with benchmark datasets and typed
+            audit trails. I served as Senior Research Scientist from May 2020 to
             December 2024; my Hill Technical Solutions role was Senior Software
             Engineer from May 2020 to August 2022.
           </p>

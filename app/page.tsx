@@ -58,11 +58,15 @@ export default function HomePage() {
             </p>
             <ul>
               <li>
-                GitLab CI/CD and Kubernetes delivery for an{" "}
-                <strong>89-service system</strong>.
+                DevSecOps and CI/CD overhaul for an inherited system of{" "}
+                <strong>26 microservices across 89 repositories</strong>.
               </li>
               <li>
-                Secure container builds, automated checks, and SBOM generation.
+                SAST/DAST, SBOM generation, automated builds, and testing.
+              </li>
+              <li>
+                A Kubernetes cluster built from lab desktops, with parallel
+                simulations reducing end-to-end test runs from <strong>seven days to four hours</strong>.
               </li>
               <li>
                 A one-click deployment dashboard supporting{" "}
