@@ -22,18 +22,18 @@ export const projects: Project[] = [
     summary:
       "A Python server that lets an MCP client configure a PicoScope and request a waveform capture.",
     contribution:
-      "I wrote the MCP server and the PicoSDK interface.",
+      "Project direction with AI-assisted implementation.",
     status: "Prototype",
     technologies: ["Python", "FastMCP", "PicoSDK"],
     source: "https://github.com/markuskreitzer/picoscope_mcp",
     introduction: [
       "PicoScope oscilloscopes connect to a computer over USB. An AI assistant can help write code for an experiment, but working with the instrument also requires a way to configure it and retrieve its samples. This project provides that connection through the Model Context Protocol (MCP).",
-      "I built a Python server between the assistant and PicoSDK, the library that controls the scope. The assistant can request operations such as selecting a channel, setting a trigger, and capturing a waveform. The server translates those requests into calls to the instrument library."
+      "The project uses a Python server between the assistant and PicoSDK, the library that controls the scope. The assistant can request operations such as selecting a channel, setting a trigger, and capturing a waveform. The server translates those requests into calls to the instrument library."
 ],
     sections: [
       {
             "title": "From a request to a waveform",
-            "body": "A capture involves several decisions before any samples come back: which device to connect to, which channel to enable, what voltage range to use, and when to trigger. I exposed these as separate operations so the assistant can configure the measurement explicitly. The block-capture path then returns the sampled waveform for inspection."
+            "body": "A capture involves several decisions before any samples come back: which device to connect to, which channel to enable, what voltage range to use, and when to trigger. The server exposes these as separate operations so the assistant can configure the measurement explicitly. The block-capture path then returns the sampled waveform for inspection."
       },
       {
             "title": "What is implemented",
@@ -48,7 +48,7 @@ export const projects: Project[] = [
     summary:
       "Reading a Ryobi ES3000 moisture meter through a Mac’s audio connection.",
     contribution:
-      "I reconstructed the read protocol and wrote the capture, decoder, and calibration logging tools.",
+      "I directed the investigation and tested the physical meter while Codex investigated the protocol and implemented the tools.",
     image: {
       src: "/images/ryobi-signal.svg",
       alt: "A 90 millisecond window of recorded Ryobi ES3000 audio, with time and full-scale amplitude axes.",
@@ -58,16 +58,16 @@ export const projects: Project[] = [
     source: "https://github.com/markuskreitzer/ryobi-moisture-meter",
     introduction: [
       "The Ryobi ES3000 is a moisture meter from the Phone Works range. Its pins go into the material being measured, but the reading appears in a phone app. The meter connects through the phone’s headphone jack, using audio signals to communicate with the app.",
-      "I worked out how to request and decode those readings from a Mac. The starting points were the meter’s manual and an archived Android app. Decompiling the app exposed the request audio, the pulse decoder, and the tables used to turn a raw reading into a displayed moisture percentage."
+      "I had one connected to my Mac in the shop and wanted to make it useful again. I asked Codex to investigate how to read it, while I handled the meter and tried it on the materials around me. The manual and an archived Android app provided enough information to reconstruct the exchange. Codex examined the app’s code and implemented the capture and decoding tools."
 ],
     sections: [
       {
             "title": "Reconstructing the exchange",
-            "body": "The request uses both stereo channels: a continuous 2.2 kHz square wave on the left and short request bursts on the right. The meter sends a pulse train back through the microphone input. Reproducing both parts of the request let me generate the tone in Python and decode the reply without running the phone app."
+            "body": "The request uses both stereo channels: a continuous 2.2 kHz square wave on the left and short request bursts on the right. The meter sends a pulse train back through the microphone input. Reproducing both parts of the request made it possible to generate the tone in Python and decode the reply without running the phone app."
       },
       {
             "title": "Turning pulses into a reading",
-            "body": "The decoder looks for a frame prefix, extracts the device identifier and moisture payload, and applies the app’s conversion table for the selected material. The material choice matters because the same raw value can map to different percentages. I kept WAV captures so I could work on the decoder and replay the same input without taking another physical measurement."
+            "body": "The decoder looks for a frame prefix, extracts the device identifier and moisture payload, and applies the app’s conversion table for the selected material. The material choice matters because the same raw value can map to different percentages. Saved WAV captures let Codex work on the decoder against the same input while I changed the physical setup for the next measurement."
       },
       {
             "title": "Checking that contact changed the response",
@@ -80,24 +80,25 @@ export const projects: Project[] = [
     title: "Coffee-roaster beep detector",
     category: "Instrumentation",
     summary:
-      "A microphone listens for a first-generation Hottop roaster’s warm-up beeps and triggers a notification.",
+      "A phone alert so I don’t miss the moment to add green beans to my coffee roaster.",
     contribution:
-      "I wrote the tone detector, beep timing checks, audio-input diagnostics, and notification code.",
+      "I supplied the recording, set the requirements, and tested the detector with Codex handling implementation.",
     status: "Personal automation",
     technologies: ["Python", "NumPy", "FFmpeg", "Audio"],
     source: "https://github.com/markuskreitzer/coffee_detector",
     introduction: [
-      "A first-generation Hottop coffee roaster sounds a sequence of beeps when it has warmed up and is ready for beans. This project listens for that signal through a microphone and sends a Pushover notification to a phone.",
-      "The Python version runs on a computer with an audio input. It checks both the pitch and timing of the sound: the target is near 4.10 kHz, and three beeps must arrive with the expected spacing before it sends an alert. That gives the detector more to work with than the presence of a single high-pitched sound."
+      "My Hottop coffee roaster takes a while to preheat. While I’m waiting, I usually start doing something around the yard or in my shop and miss the beep. That’s the signal to add the green beans, and if I miss that moment, I don’t get a good roast.",
+      "I gave Codex a recording of the beep and asked it to build a detector that would send a Pushover alert to my phone. I tested it by playing the recording and checking whether an alert arrived. The first version only picked it up when the sound was close and loud, so we adjusted it and tried again.",
+      "The detector listens through a microphone for a tone near 4.10 kHz and checks the spacing of three beeps before sending an alert. A recording can also be replayed through the program in dry-run mode, which checks detection without heating the roaster or sending a notification."
 ],
     sections: [
       {
             "title": "Getting the microphone to stay connected",
-            "body": "On the ASUS X202E laptop used for the Linux setup, starting a capture stream caused PipeWire to restore the internal microphone route, even though an external microphone was plugged into the combo jack. The service now waits for capture to start and then selects the external input. It also checks for missing frames and sustained digital silence, so a running process with a dead audio input does not quietly appear healthy."
+            "body": "I later moved the detector to the ASUS X202E laptop that runs my 3D printer, since it was now beside the roaster. During a roast, no alert arrived. We tested with the beep recording on a loop and investigated the audio input. One problem was that starting a capture stream caused PipeWire to restore the internal microphone route, even with an external microphone plugged into the combo jack. The service now waits for capture to start and then selects the external input. It also checks for missing frames and sustained digital silence, so a running process with a dead audio input does not quietly appear healthy."
       },
       {
-            "title": "Replaying the roaster’s signal",
-            "body": "I kept a reference recording of the warm-up beeps so the detector could be checked without heating the roaster for each run. Dry-run mode processes that recording without sending a notification. Live input has a separate diagnostic that reports the strongest frequency and the target tone’s level relative to the background; that helps distinguish a detection problem from a microphone or level problem."
+            "title": "Testing the whole audio path",
+            "body": "Replaying the file directly through the detector checks the signal-processing code, but it skips the microphone, room acoustics, and audio routing. For those tests, I played the beep aloud while Codex inspected the input. The live diagnostic reports the strongest frequency and its level relative to the background, which helps locate a failure before changing detection thresholds."
       },
       {
             "title": "Running on an ESP32",
