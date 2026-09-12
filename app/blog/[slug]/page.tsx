@@ -132,6 +132,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="flex flex-wrap items-center gap-3 text-muted-foreground mb-4">
             <time dateTime={post.date}>
               {new Date(post.date).toLocaleDateString("en-US", {
+                timeZone: "UTC",
                 year: "numeric",
                 month: "long",
                 day: "numeric",

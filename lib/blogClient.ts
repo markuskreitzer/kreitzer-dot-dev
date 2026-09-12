@@ -1,4 +1,3 @@
-// Client-side blog utilities
 export interface BlogPost {
   slug: string;
   title: string;
@@ -9,21 +8,8 @@ export interface BlogPost {
   content?: string;
   excerpt?: string;
 }
-
-// For client-side use, we'll need to create a simple API endpoint or use pre-built data
-// For now, we'll simulate API calls by importing the server-side functions
-// In production, this would be API calls to a backend
-
-// Import server-side functions for client use
-// Note: This is a workaround for client-side usage
 export async function getAllPosts(): Promise<BlogPost[]> {
   try {
-    // In a real implementation, this would be an API call
-    // For now, we'll use the server-side function by dynamically importing it
-    // This is a bit of a hack for client-side usage
-
-    // Since we're in client-side, we'll need to fetch from our static data
-    // In production, this would be an API endpoint
     const response = await fetch('/api/blog');
     if (!response.ok) {
       throw new Error('Failed to fetch blog posts');
@@ -32,43 +18,42 @@ export async function getAllPosts(): Promise<BlogPost[]> {
     return posts;
   } catch (error) {
     console.error('Error fetching blog posts:', error);
-    // Fallback to hardcoded data if API fails
     return [
       {
         slug: 'clean-code-principles',
-        title: 'The Beauty of Clean Code',
-        description: 'Exploring the principles of writing maintainable and readable code',
-        date: '2024-07-28',
+        title: "Code that is easier to change",
+        description: "Notes on naming, validation, types, and the cost of splitting code into smaller pieces.",
+        date: "2025-01-01",
         tags: ['Coding', 'Clean Code', 'Software Development'],
         published: true,
-        excerpt: 'Exploring the principles of writing maintainable and readable code',
+        excerpt: "Notes on naming, validation, types, and the cost of splitting code into smaller pieces.",
       },
       {
         slug: 'react-hooks-guide',
-        title: 'Mastering React Hooks',
-        description: 'A deep dive into React Hooks and how to use them effectively',
-        date: '2024-07-25',
+        title: "React hooks: state, effects, and stale results",
+        description: "Working through derived state, effect cleanup, and when memoization helps.",
+        date: "2025-01-01",
         tags: ['React', 'Hooks', 'Frontend'],
         published: true,
-        excerpt: 'A deep dive into React Hooks and how to use them effectively',
+        excerpt: "Working through derived state, effect cleanup, and when memoization helps.",
       },
       {
         slug: 'scalable-apis-nodejs',
-        title: 'Building Scalable APIs with Node.js',
-        description: 'Learn how to design and build scalable and performant APIs using Node.js',
-        date: '2024-07-21',
+        title: "Where a Node.js API spends its time",
+        description: "Request timing, database pools, caching, and what changes when an API runs in several processes.",
+        date: "2025-01-01",
         tags: ['Node.js', 'API', 'Backend', 'Scalability'],
         published: true,
-        excerpt: 'Learn how to design and build scalable and performant APIs using Node.js',
+        excerpt: "Request timing, database pools, caching, and what changes when an API runs in several processes.",
       },
       {
         slug: 'machine-learning-intro',
-        title: 'Introduction to Machine Learning',
-        description: 'A gentle introduction to the world of Machine Learning',
-        date: '2024-07-18',
+        title: "A first classifier, with a test set",
+        description: "A small scikit-learn example, followed by the evaluation mistakes that can make a good score misleading.",
+        date: "2025-01-01",
         tags: ['Machine Learning', 'AI', 'Data Science'],
         published: true,
-        excerpt: 'A gentle introduction to the world of Machine Learning',
+        excerpt: "A small scikit-learn example, followed by the evaluation mistakes that can make a good score misleading.",
       },
     ].sort((a, b) => {
       if (a.date < b.date) return 1;
@@ -77,8 +62,6 @@ export async function getAllPosts(): Promise<BlogPost[]> {
     });
   }
 }
-
-// Get a specific blog post with content
 export async function getPost(slug: string): Promise<BlogPost | null> {
   try {
     const response = await fetch(`/api/blog/${slug}`);

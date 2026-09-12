@@ -1,70 +1,25 @@
 ---
-title: "Building a Precision Frequency Meter on ESP32 with Rust: From Theory to Implementation"
-description: "Deep dive into designing and implementing a high-precision frequency measurement library for ESP32 using Rust, covering mathematical theory, embedded challenges, and WiFi interference testing"
+title: "Measuring a signal period on ESP32 with Rust"
+description: "A polling frequency meter: edge timing, timeouts, averaging, and the limits of a loopback test."
 date: "2025-12-28"
 tags: ["Rust", "ESP32", "Embedded Systems", "Signal Processing", "Frequency Measurement", "IoT", "Hardware"]
 published: true
 slug: "esp32-frequency-meter-rust"
 ---
 
-# Building a Precision Frequency Meter on ESP32 with Rust: From Theory to Implementation
+The frequency meter starts with a GPIO input and a clock. Wait for a rising edge, record the time, then wait for the next rising edge. The interval is one period.
 
-## Introduction
+That is a small amount of code. The awkward part is deciding how much to trust the number when the ESP32 is also handling WiFi and other work.
 
-Accurately measuring the frequency of digital signals is a fundamental requirement in embedded systems, from motor control to signal processing. However, achieving reliable measurements in resource-constrained environments while maintaining low latency can be challenging. In this article, we'll explore the design and implementation of a high-precision frequency measurement library for the ESP32 microcontroller using Rust, examining both the theoretical foundations and practical considerations unique to embedded systems programming.
+## Start with the period
 
-## The Problem: Frequency Measurement in Embedded Systems
-
-Digital frequency measurement appears deceptively simple: count edges over time, divide, and you have your frequency. However, several real-world challenges complicate this:
-
-1. **Noise and Jitter**: Real signals contain noise that can trigger false edge detections
-2. **Timing Precision**: Microsecond-level accuracy requires careful consideration of system timers
-3. **Resource Constraints**: Embedded systems have limited CPU cycles and memory
-4. **Interrupt Interference**: WiFi, Bluetooth, and other peripherals can introduce timing variability
-
-## Theoretical Foundation
-
-### Fundamental Relationship
-
-The frequency $f$ of a periodic signal is the inverse of its period $T$:
+For a periodic signal,
 
 $$f = \frac{1}{T}$$
 
-where $f$ is the frequency in Hertz (Hz) and $T$ is the period in seconds (s).
+where $T$ is the period in seconds and $f$ is in hertz. At 1 kHz, a period lasts 1,000 microseconds.
 
-### Period Measurement via Edge Detection
-
-For a square wave, we measure the time between consecutive rising edges (or falling edges) to determine the period. Given two timestamp measurements $t_1$ and $t_2$:
-
-$$T = t_2 - t_1$$
-
-### Noise Reduction Through Averaging
-
-To reduce measurement error from noise and timing jitter, we employ statistical averaging over $N$ samples:
-
-$$T_{\text{avg}} = \frac{1}{N} \sum_{i=1}^{N} T_i$$
-
-According to the Central Limit Theorem, averaging $N$ independent measurements reduces the standard deviation of the error by a factor of $\sqrt{N}$ [1]. For our implementation, we use $N = 10$ samples by default, providing approximately $3.16\times$ improvement in measurement precision.
-
-### Timing Resolution Considerations
-
-The ESP32's system timer operates at the CPU frequency ($240$~MHz in our configuration), providing a theoretical resolution of:
-
-$$\text{Resolution} = \frac{1}{240{,}000{,}000\text{ Hz}} \approx 4.17\text{ ns}$$
-
-However, the `esp-hal` crate provides microsecond-resolution timing through the `Instant` API, giving us $1~\mu\text{s}$ precision—more than adequate for frequencies in the Hz to kHz range.
-
-## Implementation Architecture
-
-### Library Design Philosophy
-
-Our frequency meter library (`freq_meter.rs`) follows three core principles:
-
-1. **Zero-cost Abstractions**: Leverage Rust's type system for compile-time guarantees without runtime overhead
-2. **Simplicity**: Provide a minimal API that abstracts complexity from the user
-3. **Safety**: Use Rust's ownership model to prevent common embedded programming errors
-
-### Core Data Structure
+The library calls its type `WavelengthMeter`, although it measures time between edges, not a spatial wavelength. It owns one input:
 
 ```rust
 pub struct WavelengthMeter<'d> {
@@ -72,11 +27,7 @@ pub struct WavelengthMeter<'d> {
 }
 ```
 
-The lifetime parameter `'d` ensures the GPIO pin cannot outlive the peripheral it borrows from—a compile-time guarantee preventing use-after-free bugs common in C embedded programming [2].
-
-### Edge Detection Algorithm
-
-The measurement algorithm uses a polling-based approach:
+The period measurement uses two calls to an edge-wait helper:
 
 ```rust
 fn measure_single_period(&mut self) -> Option<u64> {
@@ -95,20 +46,17 @@ fn measure_single_period(&mut self) -> Option<u64> {
 }
 ```
 
-#### Why Polling Instead of Interrupts?
+`as_micros()` expresses the elapsed time in whole microseconds. That representation sets a limit on what the returned value can show. A fast CPU clock doesn't give this API nanosecond measurement resolution.
 
-While interrupt-driven edge detection might seem ideal, we chose polling for several reasons:
+For a small timing error, the approximate relative frequency error is:
 
-1. **Timing Precision**: Interrupt latency on ESP32 varies ($5$--$25~\mu\text{s}$) depending on WiFi/Bluetooth activity [3]
-2. **Simplicity**: No need for complex interrupt handling or atomic operations
-3. **Predictability**: Polling provides consistent timing behavior
-4. **Tight Loops**: Modern CPUs make tight polling loops efficient for sub-millisecond operations
+$$\frac{|\Delta f|}{f} \approx \frac{|\Delta T|}{T}$$
 
-For frequencies below $10$~kHz, polling overhead is negligible compared to signal periods.
+One microsecond is 0.1% of a 1 kHz period, but 1% of a 10 kHz period. Polling delays add to that quantization error.
 
-### Timeout Mechanism
+## Don't wait forever for an edge
 
-To handle missing or stopped signals gracefully, we implement a timeout:
+A disconnected sensor or a constant input must return control to the caller. The helper uses a timeout for the whole edge search:
 
 ```rust
 fn wait_for_edge(&mut self, from_level: Level, to_level: Level) -> Option<()> {
@@ -130,49 +78,37 @@ fn wait_for_edge(&mut self, from_level: Level, to_level: Level) -> Option<()> {
 }
 ```
 
-The $1$-second timeout (`EDGE_TIMEOUT_MS = 1000`) allows measurement of signals as low as $1$~Hz while preventing indefinite blocking.
+With `EDGE_TIMEOUT_MS = 1000`, a search stops after roughly one second. The lowest usable frequency also depends on signal phase and duty cycle: this code first waits for the starting level, then for the transition. A nominal 1 Hz signal is therefore a boundary case rather than a guaranteed lower limit.
 
-## Rust-Specific Challenges and Solutions
+The caller receives `None` on timeout. That distinguishes a missing measurement from a measured frequency of zero. A zero-microsecond period also needs to be rejected before taking its reciprocal.
 
-### Challenge 1: `no_std` Environment
+## Average without promising accuracy
 
-Embedded Rust runs in a `no_std` context, meaning the standard library isn't available. This removes familiar tools like `Vec`, `String`, and `Box`.
+For $N$ period measurements:
 
-**Solution**: We use fixed-size arrays for sample storage:
+$$T_{\mathrm{avg}} = \frac{1}{N}\sum_{i=1}^{N} T_i$$
+
+The default uses ten samples. If their errors were independent, unbiased, and had equal variance, the standard deviation of the mean would fall by $\sqrt{N}$. Polling errors need not satisfy those assumptions. Interrupt delays can be correlated, and averaging won't recover edges the loop missed.
+
+The sample buffer is fixed-size:
 
 ```rust
 const MAX_SAMPLES: usize = 100;
 let mut measurements = [0u64; MAX_SAMPLES];
 ```
 
-This approach:
-- Avoids heap allocation entirely
-- Provides compile-time size guarantees
-- Eliminates allocation failure scenarios
+A hundred `u64` entries occupy 800 bytes before other stack use. This implementation doesn't need a heap. `no_std` alone doesn't prohibit allocation; allocation would require an allocator and the `alloc` crate.
 
-### Challenge 2: GPIO API Evolution
+## The GPIO configuration
 
-The `esp-hal` 1.0 API changed from:
+The esp-hal 1.0 form puts the pull configuration in `InputConfig`:
+
 ```rust
-// Old API
-Input::new(pin, Pull::Down)
-```
-
-To:
-```rust
-// New API
 let config = InputConfig::default().with_pull(Pull::Down);
 Input::new(pin, config)
 ```
 
-**Impact**: This builder pattern is more verbose but provides:
-- Better type safety
-- Explicit configuration visibility
-- Future extensibility without breaking changes
-
-### Challenge 3: Lifetime Management
-
-ESP32 peripherals use lifetime-bound structs to prevent dangling references:
+The constructor carries the peripheral lifetime into the meter:
 
 ```rust
 pub fn new_with_pin<P>(gpio: P) -> Self
@@ -185,24 +121,11 @@ where
 }
 ```
 
-The `+ 'd` bound ensures the GPIO peripheral lives at least as long as the `WavelengthMeter` instance [4].
+These types constrain how the peripheral is used. They don't guarantee that the electrical signal is clean or that the polling loop catches every transition.
 
-### Challenge 4: WiFi and Timing Interference
+## Check with a generated signal
 
-One of the most significant challenges in embedded frequency measurement is interference from other system activities, particularly WiFi.
-
-**The Problem**: WiFi operations on ESP32 can introduce:
-- Interrupt latency spikes (up to 100 μs)
-- CPU cycle stealing for protocol handling
-- Cache misses from context switching
-
-**Our Approach**: We test frequency measurement accuracy while maintaining an active WiFi connection to validate real-world performance. The measurement algorithm's polling nature and microsecond timing resolution prove resilient to WiFi interference.
-
-## Testing Methodology
-
-### PWM Signal Generation
-
-We use the ESP32's LEDC (LED PWM Controller) hardware to generate precise test signals:
+The LEDC peripheral can supply a square wave for a loopback check:
 
 ```rust
 lstimer0.configure(esp_hal::ledc::timer::config::Config {
@@ -212,34 +135,21 @@ lstimer0.configure(esp_hal::ledc::timer::config::Config {
 })
 ```
 
-The LEDC peripheral uses hardware timers, ensuring the test signal remains stable even during WiFi activity.
+Wire the selected output to the measurement input and use a common ground. Useful test points include:
 
-### Multi-Frequency Validation
+| Frequency | Period |
+|---|---|
+| 100 Hz | 10,000 µs |
+| 500 Hz | 2,000 µs |
+| 1,000 Hz | 1,000 µs |
+| 2,000 Hz | 500 µs |
+| 5,000 Hz | 200 µs |
 
-Our test suite cycles through frequencies spanning three orders of magnitude:
+The recorded example for this project reports 1,000 µs and 1,000 Hz with ten samples while WiFi was connected. That is a matching displayed value at one test point. It doesn't establish zero measurement error or immunity to WiFi activity. A source and a meter on the same board can also share clock error.
 
-| Frequency | Period | Expected Use Case |
-|-----------|--------|-------------------|
-| $100$~Hz | $10{,}000~\mu\text{s}$ | Low-speed sensors |
-| $500$~Hz | $2{,}000~\mu\text{s}$ | Motor encoders |
-| $1{,}000$~Hz | $1{,}000~\mu\text{s}$ | Audio/Control loops |
-| $2{,}000$~Hz | $500~\mu\text{s}$ | PWM measurement |
-| $5{,}000$~Hz | $200~\mu\text{s}$ | High-speed counting |
+For a stronger check, use an independent signal source, retain individual readings, and compare idle operation with sustained radio traffic. Count timeouts as well as successful measurements.
 
-### Results
-
-Initial testing with a $1$~kHz signal showed:
-- **Measured wavelength**: $1000~\mu\text{s}$ (exact)
-- **Calculated frequency**: $1000$~Hz
-- **Error**: $0\%$
-- **Sample averaging**: $10$ measurements
-- **WiFi status**: Connected and active
-
-This demonstrates the library's ability to achieve theoretical accuracy even in the presence of system interference.
-
-## API Design: Simplicity Meets Power
-
-The public API intentionally minimal:
+## Calling the meter
 
 ```rust
 // Basic usage
@@ -257,84 +167,6 @@ if let Some(freq_hz) = meter.measure_frequency(10) {
 }
 ```
 
-The `Option<u64>` return type elegantly handles timeouts and errors through Rust's type system, eliminating the need for error codes or exceptions.
+Polling keeps the implementation small, but occupies the CPU while it waits and can be interrupted by other work. If the application needs tighter timing or must do useful work during measurement, hardware capture or counting is worth investigating. That decision should follow the observed errors and the required frequency range.
 
-## Performance Characteristics
-
-### Memory Footprint
-
-- Library code: $\sim 2$~KB compiled (release mode with LTO)
-- Stack usage: $\sim 800$ bytes ($100$-sample array)
-- No heap allocation required
-
-### Timing Overhead
-
-For a single measurement cycle:
-1. Edge detection: $2\times$ signal period minimum
-2. Timestamp capture: $< 1~\mu\text{s}$
-3. Calculation: $< 10$ CPU cycles
-
-For $10$-sample averaging at $1$~kHz:
-- Total time: $\sim 10$~ms ($10$ periods)
-- Overhead: $< 0.1\%$ (dominated by signal period, not computation)
-
-## Lessons Learned: Rust for Embedded Systems
-
-### What Rust Gets Right
-
-1. **Zero-cost Safety**: Ownership and borrowing prevent memory corruption without runtime checks
-2. **Fearless Concurrency**: Type system prevents data races, even with interrupts (when used)
-3. **Explicit Resource Management**: RAII pattern ensures peripherals are properly configured and released
-4. **Pattern Matching**: `Option` and `Result` types make error handling explicit and composable
-
-### Challenges
-
-1. **Tooling Maturity**: Embedded Rust tooling is improving but still rough around edges (pun intended)
-2. **Documentation**: HAL documentation sometimes lags behind API changes
-3. **Learning Curve**: Lifetime annotations and ownership rules have a steep initial learning curve
-4. **Compilation Time**: Release builds with LTO can be slow (3-5 seconds for this project)
-
-### Verdict
-
-Despite challenges, Rust's safety guarantees and zero-cost abstractions make it an excellent choice for embedded systems where reliability is paramount. The compile-time checks catch entire classes of bugs that would require extensive testing in C.
-
-## Future Improvements
-
-Several enhancements could extend this library's capabilities:
-
-1. **Interrupt-Based Measurement**: For very low frequencies ($< 1$~Hz), interrupt-driven approach would be more power-efficient
-2. **Hardware Timer Capture**: ESP32's hardware timer capture units could provide even higher precision
-3. **Duty Cycle Measurement**: Extend to measure pulse width and duty cycle
-4. **Async Support**: Integration with `embassy` async runtime for concurrent operations
-5. **Frequency Tracking**: Implement a Kalman filter for tracking time-varying frequencies [5]
-
-## Conclusion
-
-Building a frequency measurement library for ESP32 in Rust demonstrates both the power and challenges of embedded Rust development. By combining solid theoretical foundations (statistical averaging, proper timing resolution) with Rust's safety guarantees, we've created a library that is both accurate and robust.
-
-The ability to achieve $0\%$ error in frequency measurement while maintaining an active WiFi connection validates our design choices: polling-based edge detection, statistical averaging, and microsecond-resolution timing prove sufficient for real-world embedded applications.
-
-Most importantly, Rust's type system caught numerous bugs at compile-time that would have required extensive testing in C—bugs involving lifetime management, configuration API usage, and resource ownership. This compile-time correctness, combined with runtime performance matching hand-optimized C, makes Rust an increasingly compelling choice for safety-critical embedded systems.
-
-## References
-
-[1] Rice, J. A. (2006). *Mathematical Statistics and Data Analysis* (3rd ed.). Duxbury Press. Chapter 5: Limit Theorems.
-
-[2] Klabnik, S., & Nichols, C. (2019). *The Rust Programming Language*. No Starch Press. Chapter 10: Generic Types, Traits, and Lifetimes.
-
-[3] Espressif Systems. (2023). *ESP32 Technical Reference Manual*. Version 4.8. Section 3.2: Interrupt Matrix.
-
-[4] Mara Bos. (2023). *Rust Atomics and Locks: Low-Level Concurrency in Practice*. O'Reilly Media. Chapter 4: Memory Ordering.
-
-[5] Welch, G., & Bishop, G. (2006). "An Introduction to the Kalman Filter." *University of North Carolina at Chapel Hill*, Technical Report TR 95-041.
-
-## Additional Resources
-
-- **esp-hal documentation**: https://docs.esp-rs.org/esp-hal/
-- **ESP32 Rust Book**: https://esp-rs.github.io/book/
-- **Project source code**: Available in this repository at `esp32-hello-world/src/freq_meter.rs`
-- **ESP32 datasheet**: https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf
-
----
-
-*Author's Note: This project was developed on macOS using esp-rs toolchain v1.88. All measurements were performed on ESP32-D0WD-V3 (revision 3.0) running at $240$~MHz. The complete source code, including the frequency meter library and WiFi-enabled test harness, is available in the project repository.*
+The [ESP-RS book](https://esp-rs.github.io/book/) covers the toolchain, and the [esp-hal documentation](https://docs.esp-rs.org/esp-hal/) describes the GPIO and timer APIs. The library file is `esp32-hello-world/src/freq_meter.rs` in the project workspace.

@@ -1,95 +1,55 @@
 ---
-title: "Getting Started with ESP32 Rust Development on macOS"
-description: "A comprehensive guide to setting up ESP32 embedded Rust development on macOS, from installation to flashing your first program"
+title: "ESP32 Rust setup on macOS: build, flash, and read serial output"
+description: "Toolchain setup and the espflash 4.3.0 workaround used with an ESP32-D0WD-V3."
 date: "2025-12-28"
 tags: ["Rust", "ESP32", "Embedded Systems", "IoT", "macOS", "Hardware"]
 published: true
 slug: "esp32-rust-macos-setup"
 ---
 
-# Getting Started with ESP32 Rust Development on macOS
+There are three separate things to get working: building firmware for the right chip, putting that firmware on the board, and reading its serial output. A successful build only checks the first one.
 
-Rust's memory safety and zero-cost abstractions make it an excellent choice for embedded systems development. Combined with the powerful ESP32 microcontroller, you can build reliable IoT devices with confidence. However, setting up the development environment on macOS has its quirks. This guide walks you through the entire process, including the gotchas I encountered so you don't have to.
+These notes use a classic Xtensa ESP32, specifically an ESP32-D0WD-V3, on macOS. The setup used Darwin 25.1.0 and Rust 1.87.0 for the host tools. Commands and generated code below reflect that setup; check the installed tool's help when using a different version.
 
-## Why Rust on ESP32?
+## Identify the chip first
 
-Before diving into the setup, here's why this combination is worth your time:
+The ESP32 family includes different architectures. The target must match the chip, not just the name printed on a seller's listing. An ESP8266 also won't run ESP32 firmware.
 
-- **Memory Safety**: Rust's ownership system prevents common embedded bugs like buffer overflows and use-after-free errors
-- **Zero-Cost Abstractions**: High-level code without runtime overhead
-- **Growing Ecosystem**: The esp-rs community provides excellent HAL (Hardware Abstraction Layer) support
-- **Great Tooling**: Cargo makes dependency management and building a breeze
-- **ESP32 Power**: WiFi, Bluetooth, dual-core processing at an affordable price point
+With `esptool` installed, query the board:
 
-## Prerequisites
+```bash
+esptool --port /dev/cu.usbserial-XX chip_id
+```
 
-Before starting, ensure you have:
-- macOS (tested on Darwin 25.1.0)
-- Rust and Cargo installed (I used Rust 1.87.0)
-- An actual ESP32 board (not ESP8266 - more on this later!)
-- A USB cable for your board
+Replace the port with the device shown by `ls /dev/cu.*`. Recent esptool versions may spell this subcommand `chip-id`; `esptool --help` lists the supported form.
 
-## Key Differences from Linux Setup
+macOS serial devices normally appear under `/dev/cu.*`. Linux instructions involving `libudev-dev` or membership in `dialout` don't apply here. The board still needs a data-capable USB cable and, for some USB-to-serial adapters, a driver.
 
-Most ESP32 Rust tutorials target Linux. Here are the main macOS differences:
+## Install the toolchain
 
-1. **No system packages needed** - Skip `libudev-dev` and similar Linux dependencies
-2. **No permission groups** - macOS handles USB permissions differently; no `dialout` group
-3. **Serial port naming** - macOS uses `/dev/cu.*` or `/dev/tty.usbserial-*`
-4. **Shell differences** - macOS defaults to zsh (not bash)
-5. **Deprecated templates** - Use `esp-generate` instead of `cargo-generate esp-rs/esp-template`
-
-## Step 1: Install the ESP Toolchain Manager
-
-First, install `espup`, which manages Rust toolchains for Espressif chips:
+The Xtensa ESP32 needs the Espressif Rust toolchain. `espup` installs it:
 
 ```bash
 cargo install espup --locked
-```
-
-**Important**: Use the `--locked` flag to avoid dependency version conflicts. I learned this the hard way when the installation failed due to a package requiring a newer Rust version than I had.
-
-## Step 2: Install ESP32 Toolchains
-
-Run the toolchain installer:
-
-```bash
 espup install
-```
-
-This downloads and installs:
-- RISC-V targets for ESP32-C series
-- Xtensa Rust 1.90.0.0 toolchain for ESP32/ESP32-S series
-- Xtensa LLVM
-- GCC toolchain (xtensa-esp-elf)
-
-The installer creates `~/export-esp.sh` with environment variables needed for building.
-
-## Step 3: Configure Your Shell Environment
-
-The ESP environment must be loaded for each terminal session. For zsh (macOS default):
-
-```bash
-# Load for current session
 . ~/export-esp.sh
-
-# Add to .zshrc for automatic loading
-echo -e "\n# ESP32 Rust environment\n[ -f ~/export-esp.sh ] && . ~/export-esp.sh" >> ~/.zshrc
 ```
 
-For bash users, use `.bashrc` or `.bash_profile` instead.
+`--locked` uses the tool's dependency lockfile. It avoids resolving a different dependency set, though the selected tool version must still support your host Rust compiler.
 
-## Step 4: Install Project Generator
+The generated `export-esp.sh` sets the build environment. Source it in each terminal used for this project, or add a guarded source command to your shell startup file. A missing Xtensa linker is a reason to check that environment before reinstalling tools.
 
-The old `cargo-generate` template is deprecated. Use the modern `esp-generate`:
+## Generate a project
+
+Install the generator and flashing tools:
 
 ```bash
 cargo install esp-generate
+cargo install espflash
+pipx install esptool
 ```
 
-## Step 5: Create Your First Project
-
-Generate a new ESP32 project with useful options:
+This project included WiFi, allocation support, and backtraces:
 
 ```bash
 esp-generate --chip esp32 --headless \
@@ -100,28 +60,11 @@ esp-generate --chip esp32 --headless \
   esp32-hello-world
 ```
 
-**Option breakdown**:
-- `--chip esp32`: Target ESP32 (use `esp32c3`, `esp32s3`, etc. for variants)
-- `--headless`: Non-interactive mode
-- `-o unstable-hal`: Latest HAL features
-- `-o alloc`: Dynamic memory allocation
-- `-o wifi`: WiFi support (requires unstable-hal and alloc)
-- `-o esp-backtrace`: Panic handling and debugging
+Generator options change with releases. Use `esp-generate --help` to check the available options rather than copying flags into an incompatible version. For a first serial-only check, generating fewer peripherals leaves fewer things to debug.
 
-## Step 6: Install Flashing Tools
+## Print something repeatedly
 
-Install both `espflash` and `esptool`:
-
-```bash
-cargo install espflash
-pipx install esptool
-```
-
-You'll see why we need both tools in the flashing section below.
-
-## Writing Your First Program
-
-Let's modify the generated code to print messages. Edit `src/bin/main.rs`:
+The WiFi-enabled program below initializes the generated runtime and prints a counter once a second. It initializes the radio; it does not join an access point.
 
 ```rust
 use esp_backtrace as _;
@@ -129,7 +72,7 @@ use esp_hal::clock::CpuClock;
 use esp_hal::main;
 use esp_hal::time::{Duration, Instant};
 use esp_hal::timer::timg::TimerGroup;
-use esp_println::println;  // Add this import
+use esp_println::println;
 
 extern crate alloc;
 
@@ -171,139 +114,55 @@ fn main() -> ! {
 }
 ```
 
-## Building Your Project
+The delay is a busy wait. That's adequate for this bring-up example, but it occupies the CPU between messages. An application's scheduler or timer should handle waiting once there is other work to run.
 
-Build the firmware:
+Build from the project directory:
 
 ```bash
 cd esp32-hello-world
-. ~/export-esp.sh  # If not in .zshrc
+. ~/export-esp.sh
 cargo build --release
 ```
 
-**Critical**: Always source `export-esp.sh` before building, or you'll get linker errors.
+## When espflash panics
 
-## The espflash 4.3.0 Bug and Workaround
+The setup encountered this error with espflash 4.3.0:
 
-Here's where I hit a major roadblock. The current version of espflash (4.3.0) has a bug that causes it to panic with "range end index 4 out of range for slice of length 3" when trying to flash.
+```text
+range end index 4 out of range for slice of length 3
+```
 
-**The workaround** uses `espflash` to generate the binary and `esptool` to flash it:
+The workaround was to use espflash to create a merged image and esptool to write it. This is a workaround for that failure, not a required step for every espflash version.
 
 ```bash
-# Step 1: Generate merged firmware binary
 espflash save-image --chip esp32 --merge \
   target/xtensa-esp32-none-elf/release/esp32-hello-world \
   esp32-firmware.bin
 
-# Step 2: Flash with esptool
 esptool --chip esp32 --port /dev/cu.usbserial-XX --baud 460800 \
   write-flash 0x0 esp32-firmware.bin
 ```
 
-Replace `/dev/cu.usbserial-XX` with your actual port (find it with `ls /dev/cu.*`).
+The address `0x0` belongs with the merged image in this command. Don't assume an arbitrary application binary can be flashed at the same address.
 
-## Identifying Your Board
+## If the board won't enter the bootloader
 
-**Important lesson learned**: Not all boards in your parts bin are ESP32s! I initially grabbed an ESP8266 by mistake. Here's how to verify:
+First check the chip selection and serial port. Then disconnect attached peripherals and retry. A sensor connected to a boot-strapping pin can change the boot mode; a DHT11 was involved in this setup's flashing trouble.
 
-```bash
-esptool --port /dev/cu.usbserial-XX chip_id
-```
+Boards with working auto-reset circuitry normally enter the bootloader when the tool connects. If that fails, hold BOOT while resetting the board, then release BOOT after the tool starts connecting. Use the board's documentation for its button sequence.
 
-This shows your exact chip:
-- ESP32-D0WD-V3 ✅ (what I had)
-- ESP8266EX ❌ (what I initially tried)
-- ESP32-C3, ESP32-S3, etc. ✅
+Changing a cable is also a useful check. Power LEDs don't establish that USB data is working.
 
-The ESP8266 is a completely different architecture and won't work with ESP32 firmware.
+## Read the running firmware
 
-## Entering Bootloader Mode
-
-Most ESP32 dev boards have auto-reset circuitry. However, if flashing fails:
-
-1. Unplug the USB cable
-2. Hold down the BOOT button
-3. Plug USB back in while holding BOOT
-4. Release BOOT after 2-3 seconds
-5. Run the flash command immediately
-
-**Pro tip**: Disconnect any sensors or peripherals during flashing. I had a DHT11 sensor that was interfering with the bootloader.
-
-## Monitoring Serial Output
-
-After flashing successfully, monitor your ESP32:
+Close any program already holding the port, then open a serial monitor:
 
 ```bash
-# Using screen (built into macOS)
 screen /dev/cu.usbserial-XX 115200
-
-# Exit: Ctrl+A then K, then Y to confirm
 ```
 
-Press the EN/RST button to reset the board, and you should see:
+Press EN/RST if startup output has already passed. The example should print its startup messages followed by an increasing loop counter. In `screen`, press Ctrl+A, then K, then Y to close the session.
 
-```
-========================================
-ESP32 Rust Hello World!
-========================================
-WiFi/BLE initialized successfully
-Starting main loop...
+If flashing succeeds but there is no output, check the baud rate, reset the board, and confirm that the monitored port is still the correct one. Repeated resets or panic output point to a different problem from a failed flash.
 
-Loop iteration: 1 - ESP32 is alive!
-Loop iteration: 2 - ESP32 is alive!
-Loop iteration: 3 - ESP32 is alive!
-...
-```
-
-## Common Issues and Solutions
-
-### "linker xtensa-esp32-elf-gcc not found"
-
-You forgot to source the environment:
-```bash
-. ~/export-esp.sh
-```
-
-### "Wrong boot mode detected"
-
-Try these in order:
-1. Disconnect peripherals from GPIO pins
-2. Manually enter bootloader mode (see above)
-3. Try a different USB cable or port
-4. Some cheap USB adapters don't support auto-reset
-
-### Build succeeds but flash fails immediately
-
-Check if you're using the right chip variant in your commands. An ESP32-C3 won't accept ESP32 firmware.
-
-## What's Next?
-
-Now that you have a working setup:
-
-1. **Explore peripherals**: GPIO, I2C, SPI, PWM
-2. **Try WiFi connectivity**: HTTP clients, MQTT
-3. **Add sensors**: Temperature, humidity, motion detection
-4. **Build something useful**: Weather station, home automation, data logger
-
-Check out the [esp-hal examples](https://github.com/esp-rs/esp-hal/tree/main/examples) for inspiration.
-
-## Conclusion
-
-Setting up ESP32 Rust development on macOS has its challenges, but the result is worth it. You get Rust's safety guarantees in embedded systems, excellent tooling, and a powerful microcontroller platform.
-
-The key takeaways:
-- Use `--locked` when installing Rust tools
-- Always source `export-esp.sh` before building
-- Work around espflash 4.3.0 bug with save-image + esptool
-- Verify your chip type before flashing
-- Disconnect peripherals during flashing
-
-Happy embedded Rust development! If you run into issues or have questions, the esp-rs community on Matrix/Discord is incredibly helpful.
-
-## Resources
-
-- [ESP-RS Book](https://esp-rs.github.io/book/) - Official documentation
-- [esp-generate](https://github.com/esp-rs/esp-generate) - Project generator
-- [esp-hal](https://docs.esp-rs.org/esp-hal/) - Hardware abstraction layer
-- [espflash](https://github.com/esp-rs/espflash) - Flashing tool
-- [ESP32 Datasheet](https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf)
+The [ESP-RS book](https://esp-rs.github.io/book/), [esp-generate repository](https://github.com/esp-rs/esp-generate), and [espflash repository](https://github.com/esp-rs/espflash) are the places to check when a command differs from these notes.

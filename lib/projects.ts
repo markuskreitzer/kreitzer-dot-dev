@@ -19,28 +19,28 @@ export const projects: Project[] = [
     title: "PicoScope MCP",
     category: "Instrumentation",
     summary:
-      "A Python MCP interface that connects AI clients to PicoScope configuration and block acquisition.",
+      "A Python server that lets an MCP client configure a PicoScope and request a waveform capture.",
     contribution:
-      "Designed and implemented the MCP server and instrument interface.",
+      "I wrote the MCP server and the PicoSDK interface.",
     status: "Prototype",
     technologies: ["Python", "FastMCP", "PicoSDK"],
     source: "https://github.com/markuskreitzer/picoscope_mcp",
     sections: [
       {
         title: "Instrument control",
-        body: "Can an AI client work through the same explicit setup steps as a person at a test bench? This project exposes discovery, connection, channel configuration, triggering, and block capture as structured tools.",
+        body: "The server gives an AI client separate tools to find an instrument, connect to it, configure channels and triggers, and capture a block of samples. Each step has explicit parameters so the client can inspect and change the setup.",
       },
       {
         title: "Implementation",
-        body: "The server maps MCP requests into typed configuration models and PicoSDK calls. A capture workflow connects a device, configures a channel and trigger, then returns sampled waveform data for inspection.",
+        body: "MCP requests become typed configuration objects and PicoSDK calls. A capture starts with a device connection, followed by channel and trigger setup. The block-acquisition path returns waveform samples for the client to inspect.",
       },
       {
         title: "Acquisition support",
-        body: "The implementation contains the configuration and block-acquisition paths. Hardware operation depends on a compatible instrument and native PicoSDK libraries. Hardware acquisition requires validation on the connected instrument.",
+        body: "Configuration and block acquisition are implemented. Running them requires a compatible PicoScope and the native PicoSDK libraries. The basic tests check server behavior; acquisition still needs to be checked against the connected instrument.",
       },
       {
         title: "Limits",
-        body: "Streaming is incomplete. Frequency and amplitude tools provide guidance rather than calculated results, and FFT, THD, rise-time, and several advanced tools are placeholders. The project is an instrument-integration prototype.",
+        body: "Streaming is unfinished. The frequency and amplitude tools return instructions, not measurements. FFT, THD, and rise-time tools are placeholders. Those limits make this a prototype; a client should not treat those tool responses as calculated results.",
       },
     ],
   },
@@ -49,9 +49,9 @@ export const projects: Project[] = [
     title: "Ryobi moisture-meter decoder",
     category: "Instrumentation",
     summary:
-      "Reconstructing an audio protocol to read a Ryobi ES3000 from a Mac.",
+      "Reading a Ryobi ES3000 moisture meter through a Mac’s audio connection.",
     contribution:
-      "Reconstructed the read protocol and built capture, decoding, and calibration-log tools.",
+      "I reconstructed the read protocol and wrote the capture, decoder, and calibration logging tools.",
     image: {
       src: "/images/ryobi-signal.svg",
       alt: "A 90 millisecond window of recorded Ryobi ES3000 audio, with time and full-scale amplitude axes.",
@@ -62,19 +62,19 @@ export const projects: Project[] = [
     sections: [
       {
         title: "Audio protocol",
-        body: "The ES3000 communicates through a phone audio connection. The work starts with the original read path: a 2.2 kHz excitation tone, short request bursts, and a returning pulse train.",
+        body: "The ES3000 uses a phone’s audio connection for communication. To request a reading, the software sends a 2.2 kHz excitation tone and short bursts. The meter replies with a train of pulses that can be recorded as audio.",
       },
       {
         title: "Decoding",
-        body: "Python generates the request waveform, records the response, finds candidate frames, decodes the moisture payload, and applies the original material-group conversion. Repeated captures can be aggregated, and readings can be logged beside a reference meter value.",
+        body: "The Python tools generate the request and record the response. The decoder finds candidate frames, extracts the raw moisture value, and looks it up in the original material-group table. Repeated captures can be combined, and the log can include a reference meter reading for comparison.",
       },
       {
         title: "Sample captures",
-        body: "Curated WAV captures make offline decoding repeatable. The stored wood capture decodes to two valid frames with raw value 6. The original material table maps that value to 0.0% for group 1.",
+        body: "The repository includes WAV files that can be decoded without attaching a meter. The wood recording yields two valid frames with raw value 6. For material group 1, the original conversion table maps that value to 0.0%.",
       },
       {
         title: "Limits",
-        body: "A valid protocol frame does not establish measurement accuracy. Contact quality, audio hardware, material selection, and calibration still matter. The tool supports investigation and comparison; it is not a certified moisture instrument.",
+        body: "Decoding a valid frame checks the communication path. Measurement accuracy needs a separate comparison against a reference, with the material and contact conditions recorded. Audio hardware and calibration can affect the result.",
       },
     ],
   },
@@ -83,24 +83,24 @@ export const projects: Project[] = [
     title: "Coffee-roaster beep detector",
     category: "Instrumentation",
     summary:
-      "An acoustic monitor for the warm-up beep cadence of a first-generation Hottop coffee roaster.",
+      "A microphone listens for a first-generation Hottop roaster’s warm-up beeps and triggers a notification.",
     contribution:
-      "Built the tone and cadence detector, input health checks, and notification workflow.",
+      "I wrote the tone detector, beep timing checks, audio-input diagnostics, and notification code.",
     status: "Personal automation",
     technologies: ["Python", "NumPy", "FFmpeg", "Audio"],
     source: "https://github.com/markuskreitzer/coffee_detector",
     sections: [
       {
         title: "Beep detection",
-        body: "The detector listens for a tone near 4.10 kHz and requires three correctly timed beeps before declaring the roaster ready. Timing helps distinguish the desired event from unrelated sounds.",
+        body: "The target tone is near 4.10 kHz. A tone at that frequency alone is not enough: the detector waits for three beeps with the expected timing before reporting that the roaster is ready.",
       },
       {
         title: "Testing",
-        body: "A reference recording can run through the same detector in dry-run mode. Input health checks detect missing frames and sustained digital silence. A separate tone diagnostic reports the received frequency and target-to-background ratio.",
+        body: "A dry run feeds a reference recording through the detector without sending an alert. The input checks report missing audio frames and sustained digital silence. A tone diagnostic shows the received frequency and its level relative to the background, which helps when placing the microphone.",
       },
       {
         title: "Limits",
-        body: "This is a warm-up beep detector for a specific roaster, not a general roasting-state classifier. First crack, second crack, and cooling recognition remain research directions. Pushover alerts require separately configured credentials; the repository uses the PolyForm Noncommercial license.",
+        body: "The detector recognizes this roaster’s warm-up signal. It does not identify first crack, second crack, or cooling. Pushover notifications need credentials supplied by the person running it. The code uses the PolyForm Noncommercial license.",
       },
     ],
   },
@@ -108,8 +108,8 @@ export const projects: Project[] = [
     slug: "image-gen",
     title: "Image generation experiments",
     category: "AI and developer tools",
-    summary: "A Python workspace for image-generation tooling.",
-    contribution: "Personal tooling and experimentation.",
+    summary: "A Python command-line tool for running FLUX image generation locally.",
+    contribution: "I work on the command-line interface and local model execution.",
     status: "Experimental",
     technologies: ["Python", "AI"],
     source: "https://github.com/markuskreitzer/image-gen",
@@ -119,7 +119,7 @@ export const projects: Project[] = [
     slug: "midpoint",
     title: "Midpoint Calculator",
     category: "Applications",
-    summary: "A web application for exploring a geographic midpoint.",
+    summary: "Find a meeting point between locations on a map.",
     contribution: "Application development.",
     status: "Public application",
     demo: "https://midpoint.kreitzer.dev",
@@ -172,9 +172,9 @@ export const projects: Project[] = [
     title: "RV Reservation Schedule",
     category: "Applications",
     summary:
-      "An interactive reservation calendar with site occupancy and reservation entry.",
+      "A calendar for entering RV reservations and checking which sites are occupied.",
     contribution:
-      "Application development; public demo with browser-local data.",
+      "I built the application. The public demo stores its reservations in your browser.",
     status: "Interactive demo",
     technologies: ["SvelteKit", "TypeScript", "Tauri"],
     demo: "https://rv-reservation-demo.vercel.app",
@@ -185,7 +185,7 @@ export const projects: Project[] = [
     title: "Doctoral research",
     category: "Research",
     summary:
-      "Electrical engineering research spanning IoT sensors, communications, and chaotic systems.",
+      "My electrical engineering research at Auburn includes IoT sensors, communications, and chaotic systems.",
     contribution:
       "Research, firmware, hardware design, and laboratory teaching at Auburn University.",
     status: "Ongoing PhD",

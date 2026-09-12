@@ -4,7 +4,7 @@ import { WorkshopNav } from "@/components/WorkshopNav";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Hands-on AI engineering, developer tooling, deployment automation, and ongoing doctoral research.",
+    "Markus Kreitzer’s work at PeopleTec, deployment automation at Valkyrie and Evolvent, and research at Auburn.",
   alternates: { canonical: "/about" },
 };
 export default function AboutPage() {
@@ -20,15 +20,15 @@ export default function AboutPage() {
         <section>
           <h2>PeopleTec</h2>
           <p>
-            At PeopleTec, I established DevOps practices for several projects. I
-            now lead the team and define delivery requirements and engineering
-            standards, while team members handle most day-to-day DevOps
-            implementation. My work also includes reusable services,
-            identity-aware integration, and developer workflows. I architected
-            and built a full Go application and led its development team as
-            technical lead before handing off team leadership. I also help teams
-            connect architecture with implementation through code review and
-            mentoring.
+            I architected and built a Go application at PeopleTec and led its
+            development team as technical lead. I have since handed that team
+            over to another lead.
+          </p>
+          <p>
+            I also set up DevOps for several projects. My team now handles most
+            of that implementation; I specify the requirements and engineering
+            standards and review the work. Other parts of my role include
+            service integration, developer tooling, and code review.
           </p>
           <p>
             My roles are Technical Leader - Artificial Intelligence (April 2026
@@ -75,14 +75,13 @@ export default function AboutPage() {
         <section>
           <h2>Earlier experience</h2>
           <p>
-            Earlier roles at DISA, Unisys, QinetiQ, Apple, and the Marine Corps
-            developed my approach to troubleshooting, instrumentation,
-            communications, and reliable operations. Today that background
-            informs both large software systems and small workbench experiments.
+            Before these roles, I worked at DISA, Unisys, QinetiQ, and Apple,
+            and served in the Marine Corps. That work included troubleshooting,
+            communications, and systems operations.
           </p>
         </section>
         <a href="https://www.linkedin.com/in/markuskreitzer/">
-          Full professional profile
+          Work history on LinkedIn
         </a>
       </main>
     </div>

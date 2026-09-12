@@ -23,7 +23,7 @@ const USER_TITLE =
   process.env.NEXT_PUBLIC_USER_TITLE || "AI & Platform Engineer";
 const USER_DESCRIPTION =
   process.env.NEXT_PUBLIC_USER_DESCRIPTION ||
-  "I'm a PhD Student in Electrical Engineering specializing in building robust and scalable IoT sensors by night. During the day I am a technical leader managing a group of AI and web applications engineers moderizing digital threads for Test Engineers using model based systems engineering and digital engineering tools. I love turning complex problems into elegant, efficient code. I'm particularly interested in Full-Stack Development, Cloud Technologies, and Machine Learning.";
+  "I work on AI applications and developer tooling at PeopleTec in Huntsville, Alabama, and am pursuing a PhD in electrical engineering at Auburn.";
 
 const GITHUB_URL =
   process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/markuskreitzer";
@@ -37,7 +37,7 @@ const SITE_TITLE =
   process.env.NEXT_PUBLIC_SITE_TITLE || `${USER_NAME} - ${USER_TITLE}`;
 const SITE_DESCRIPTION =
   process.env.NEXT_PUBLIC_SITE_DESCRIPTION ||
-  "AI engineering, developer tooling, DevOps automation, and instrumentation by Markus Kreitzer.";
+  "Software projects, electronics, and technical articles by Markus Kreitzer.";
 const CHAT_URL =
   process.env.NEXT_PUBLIC_CHAT_URL || "https://chat.kreitzer.dev";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kreitzer.dev";

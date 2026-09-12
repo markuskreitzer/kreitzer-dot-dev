@@ -15,9 +15,6 @@ export default function WorkPage() {
       <WorkshopNav />
       <main id="main-content" className="workshop-page">
         <h1>Projects</h1>
-        <p className="page-intro">
-          Software, instrumentation, and applications.
-        </p>
         <ProjectList items={projects} />
       </main>
     </div>

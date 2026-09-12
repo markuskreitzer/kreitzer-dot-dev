@@ -27,7 +27,7 @@ export default async function CaseStudy({ params }: Props) {
     <div className="workshop">
       <WorkshopNav />
       <main id="main-content" className="workshop-page case-study">
-        <Link href="/work">All work</Link>
+        <Link href="/work">All projects</Link>
         <h1>{project.title}</h1>
         <p className="page-intro">{project.summary}</p>
         {project.image && (
@@ -39,7 +39,7 @@ export default async function CaseStudy({ params }: Props) {
               height={400}
             />
             <figcaption>
-              Recorded signal from the repository’s curated wood capture.
+              Audio from the stored wood measurement.
             </figcaption>
           </figure>
         )}
@@ -59,7 +59,7 @@ export default async function CaseStudy({ params }: Props) {
         ))}
         {project.source && (
           <a className="source-link" href={project.source}>
-            Explore the source and setup instructions
+            Source code and setup
           </a>
         )}
       </main>

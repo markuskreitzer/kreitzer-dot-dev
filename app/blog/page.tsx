@@ -15,9 +15,6 @@ export default function BlogPage() {
       <WorkshopNav />
       <main id="main-content" className="workshop-page">
         <h1>Writing</h1>
-        <p className="page-intro">
-          Articles on software, electronics, and research.
-        </p>
         <div className="writing-list">
           {posts.map((post) => (
             <article key={post.slug}>

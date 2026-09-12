@@ -105,7 +105,7 @@ export default async function OpenGraphImage() {
               marginTop: 32,
             }}
           >
-            Full-Stack Developer • Embedded Systems • Technical Writing
+            Software, electronics, and project notes
           </div>
         </div>
 
