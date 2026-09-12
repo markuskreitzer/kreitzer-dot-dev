@@ -20,6 +20,12 @@ export default function AboutPage() {
         <section>
           <h2>PeopleTec</h2>
           <p>
+            I have led teams developing TypeScript, Python, and Go applications
+            for the test and evaluation community. My work includes agentic AI
+            tools and evaluation benchmarks for retrieval performance,
+            adversarial prompting, and agent behavior.
+          </p>
+          <p>
             I architected and built a Go application at PeopleTec and led its
             development team as technical lead. I have since handed that team
             over to another lead.
@@ -45,8 +51,10 @@ export default function AboutPage() {
             CI/CD: SAST/DAST, SBOM generation, builds, and testing. I built a
             Kubernetes cluster from the lab’s high-performance desktops and
             parallelized end-to-end simulations, reducing test runs from seven
-            days to four hours. I also built ML pipelines with benchmark
-            datasets and typed audit trails. I served as Senior Research
+            days to four hours. I also researched AI agents for reverse
+            engineering binaries of unknown origin using Ghidra and other
+            forensic and analysis tools, and built supporting ML pipelines
+            and evaluation datasets. I served as Senior Research
             Scientist from May 2020 to December 2024; my Hill Technical
             Solutions role was Senior Software Engineer from May 2020 to August
             2022.
@@ -62,14 +70,20 @@ export default function AboutPage() {
           <h2>Auburn University</h2>
           <p>
             I am pursuing a PhD in electrical engineering at Auburn University.
-            My research background includes sensors, IoT, chaotic systems,
-            software-defined radio, and neural networks. I earned an MS in 2018
-            and a Bachelor of Electrical Engineering in 2013.
+            My doctoral research concerns low-cost ice detection for airborne
+            vehicles using flexible capacitive sensors and relaxation
+            oscillators. I work on sensor circuits, embedded measurement
+            firmware, and experiments to study water-to-ice transitions.
+            I earned an MS in 2018 and a Bachelor of Electrical Engineering in 2013.
           </p>
           <p>
             As a Graduate Research Assistant from August 2016 to May 2020, I
-            worked on hardware and firmware and taught analog electronics and
-            wireless engineering laboratories.
+            developed a device placed inside hay bales to monitor temperature
+            and moisture associated with spontaneous-combustion risk. The work
+            included calibration, firmware, and a phone-accessible interface.
+            I was first author of “An Agricultural IoT Device for Monitoring
+            Environmental Conditions in Hay Bales” (2018). I also taught analog
+            electronics and wireless engineering laboratories.
           </p>
         </section>
         <section>

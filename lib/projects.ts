@@ -187,7 +187,7 @@ export const projects: Project[] = [
     title: "Doctoral research",
     category: "Research",
     summary:
-      "My electrical engineering research at Auburn includes IoT sensors, communications, and chaotic systems.",
+      "My doctoral research uses flexible capacitive sensors and relaxation oscillators to investigate ice detection for airborne vehicles.",
     contribution:
       "Research, firmware, hardware design, and laboratory teaching at Auburn University.",
     status: "Ongoing PhD",
