@@ -114,11 +114,10 @@ export default function HomePage() {
         </section>
         <section className="contact-strip">
           <h2>Let’s talk engineering.</h2>
-          <a href="mailto:markus.kreitzer@proton.me">
-            markus.kreitzer@proton.me
+          <a href="https://www.linkedin.com/in/markuskreitzer/">
+            Connect with me on LinkedIn
           </a>
           <a href="https://github.com/markuskreitzer">GitHub</a>
-          <a href="https://www.linkedin.com/in/markuskreitzer/">LinkedIn</a>
         </section>
       </main>
     </div>

@@ -10,7 +10,7 @@ export function WorkshopNav() {
         <Link href="/work">Work</Link>
         <Link href="/about">About</Link>
         <Link href="/blog">Writing</Link>
-        <a href="mailto:markus.kreitzer@proton.me">Contact</a>
+        <a href="https://www.linkedin.com/in/markuskreitzer/">Contact</a>
       </nav>
     </header>
   );
