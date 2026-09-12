@@ -26,9 +26,10 @@ export default function AboutPage() {
           <p>
             At PeopleTec, I work on AI and platform engineering: CI/CD, secure
             container pipelines, reusable services, identity-aware integration,
-            and developer workflows. I built a Go prototype for orchestration
-            and help teams connect architecture with implementation through code
-            review and mentoring.
+            and developer workflows. I architected and built a full Go application
+            and led its development team as technical lead before handing off
+            team leadership. I also help teams connect architecture with
+            implementation through code review and mentoring.
           </p>
           <p>
             My roles are Technical Leader - Artificial Intelligence (April 2026
