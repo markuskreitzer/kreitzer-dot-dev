@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WebAppsMenu } from "@/components/WebAppsMenu";
 
 export function WorkshopNav() {
   return (
@@ -8,6 +9,7 @@ export function WorkshopNav() {
       </Link>
       <nav aria-label="Main navigation">
         <Link href="/work">Projects</Link>
+        <WebAppsMenu />
         <Link href="/about">About</Link>
         <Link href="/blog">Writing</Link>
         <a href="https://www.linkedin.com/in/markuskreitzer/">Contact</a>

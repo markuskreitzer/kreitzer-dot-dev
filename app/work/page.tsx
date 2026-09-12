@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { WorkshopNav } from "@/components/WorkshopNav";
 import { ProjectList } from "@/components/ProjectList";
-import { projects } from "@/lib/projects";
+import { engineeringProjects } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Work",
   description:
-    "AI tools, instrumentation, applications, and electrical engineering research by Markus Kreitzer.",
+    "GitHub projects, instrumentation, AI tools, and doctoral research by Markus Kreitzer.",
   alternates: { canonical: "/work" },
 };
 export default function WorkPage() {
@@ -15,7 +15,7 @@ export default function WorkPage() {
       <WorkshopNav />
       <main id="main-content" className="workshop-page">
         <h1>Projects</h1>
-        <ProjectList items={projects} />
+        <ProjectList items={engineeringProjects} />
       </main>
     </div>
   );

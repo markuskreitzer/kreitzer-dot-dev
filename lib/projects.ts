@@ -11,6 +11,7 @@ export interface Project {
   image?: { src: string; alt: string };
   source?: string;
   demo?: string;
+  webApp?: boolean;
   sections: { title: string; body: string }[];
 }
 
@@ -119,6 +120,7 @@ export const projects: Project[] = [
   },
   {
     slug: "midpoint",
+    webApp: true,
     title: "Midpoint Calculator",
     category: "Applications",
     summary: "Find a meeting point between locations on a map.",
@@ -131,13 +133,39 @@ export const projects: Project[] = [
   },
   {
     slug: "recipes",
+    webApp: true,
     title: "Kreitzer Family Recipes",
     category: "Applications",
     summary:
       "A searchable recipe collection with categories and individual recipe pages.",
     contribution: "Application development and maintenance.",
     status: "Live application",
-    technologies: ["Svelte", "Web"],
+    demo: "https://recipes.kreitzer.dev",
+    technologies: ["Eleventy", "Web"],
+    sections: [],
+  },
+  {
+    slug: "foodlogger",
+    title: "Food Logger",
+    category: "Applications",
+    summary: "Log meals, water, and daily health observations.",
+    contribution: "Application development.",
+    status: "Live application",
+    technologies: ["React", "TypeScript", "Firebase"],
+    demo: "https://foodlogger.kreitzer.dev",
+    webApp: true,
+    sections: [],
+  },
+  {
+    slug: "address-labels",
+    title: "Address Label Maker",
+    category: "Applications",
+    summary: "Organize addresses and generate printable labels.",
+    contribution: "Application development.",
+    status: "Live application",
+    technologies: ["SvelteKit", "Firebase"],
+    demo: "https://labels.kreitzer.dev",
+    webApp: true,
     sections: [],
   },
   {
@@ -167,6 +195,7 @@ export const projects: Project[] = [
   },
   {
     slug: "rv-reservation-demo",
+    webApp: true,
     image: {
       src: "/images/rv-demo.png",
       alt: "RV reservation demo showing the ten-site calendar with no reservations.",
@@ -179,7 +208,7 @@ export const projects: Project[] = [
       "I built the application. The public demo stores its reservations in your browser.",
     status: "Interactive demo",
     technologies: ["SvelteKit", "TypeScript", "Tauri"],
-    demo: "https://rv-reservation-demo.vercel.app",
+    demo: "https://rvcamp.kreitzer.dev",
     sections: [],
   },
   {
@@ -199,3 +228,9 @@ export const projects: Project[] = [
 export const featuredProjects = projects.filter(
   (project) => project.sections.length > 0,
 );
+
+export const engineeringProjects = projects.filter(
+  (project) => project.category !== "Applications",
+);
+
+export const webApps = projects.filter((project) => project.webApp && project.demo);

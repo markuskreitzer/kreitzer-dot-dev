@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { WorkshopNav } from "@/components/WorkshopNav";
 import { ProjectList } from "@/components/ProjectList";
-import { featuredProjects, projects } from "@/lib/projects";
+import { featuredProjects } from "@/lib/projects";
 import { getAllPosts } from "@/lib/blog";
 
 export default function HomePage() {
@@ -42,10 +42,6 @@ export default function HomePage() {
             testing from seven days to four hours.
           </p>
           <Link href="/about">Work history and education</Link>
-        </section>
-        <section className="workshop-section">
-          <h2>Applications</h2>
-          <ProjectList items={projects.filter((project) => project.demo)} />
         </section>
         <section className="workshop-section">
           <div className="section-heading">
