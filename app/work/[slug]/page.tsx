@@ -43,14 +43,6 @@ export default async function CaseStudy({ params }: Props) {
             </figcaption>
           </figure>
         )}
-        <dl>
-          <dt>My contribution</dt>
-          <dd>{project.contribution}</dd>
-          <dt>Status</dt>
-          <dd>{project.status}</dd>
-          <dt>Tools</dt>
-          <dd>{project.technologies.join(", ")}</dd>
-        </dl>
         {project.sections.map((section) => (
           <section key={section.title}>
             <h2>{section.title}</h2>

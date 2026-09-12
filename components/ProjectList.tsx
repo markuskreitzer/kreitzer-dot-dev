@@ -27,9 +27,6 @@ export function ProjectList({ items }: { items: Project[] }) {
           </div>
           <div>
             <p>{project.summary}</p>
-            <p className="project-meta">
-              {project.status} · {project.technologies.join(", ")}
-            </p>
             <div className="project-links">
               {project.sections.length > 0 && (
                 <Link href={`/work/${project.slug}`}>Details</Link>
