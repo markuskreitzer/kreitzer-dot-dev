@@ -19,7 +19,7 @@ export default function BlogPage() {
           {posts.map((post) => (
             <article key={post.slug}>
               <time dateTime={String(post.date)}>
-                {String(post.date).slice(0, 10)}
+                {post.dateDisplay || String(post.date).slice(0, 10)}
               </time>
               <h2>
                 <Link href={`/blog/${post.slug}`}>{post.title}</Link>

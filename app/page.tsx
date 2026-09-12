@@ -52,7 +52,7 @@ export default function HomePage() {
             {posts.map((post) => (
               <article key={post.slug}>
                 <time dateTime={String(post.date)}>
-                  {String(post.date).slice(0, 10)}
+                  {post.dateDisplay || String(post.date).slice(0, 10)}
                 </time>
                 <h3>
                   <Link href={`/blog/${post.slug}`}>{post.title}</Link>

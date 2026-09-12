@@ -18,6 +18,7 @@ export interface BlogPost {
   title: string;
   description: string;
   date: string;
+  dateDisplay?: string;
   tags: string[];
   published: boolean;
   content?: string;
@@ -30,6 +31,7 @@ export interface BlogPostMetadata {
   title: string;
   description: string;
   date: string;
+  dateDisplay?: string;
   tags: string[];
   published: boolean;
   excerpt?: string;
@@ -55,6 +57,7 @@ export function getAllPosts(): BlogPostMetadata[] {
         title: matterResult.data.title,
         description: matterResult.data.description,
         date: matterResult.data.date,
+        dateDisplay: matterResult.data.date_display,
         tags: matterResult.data.tags || [],
         published: matterResult.data.published !== false, // Default to true
         excerpt: matterResult.data.description, // Use description as excerpt
@@ -118,6 +121,7 @@ export async function getPost(slug: string): Promise<BlogPost | null> {
     title: matterResult.data.title,
     description: matterResult.data.description,
     date: matterResult.data.date,
+    dateDisplay: matterResult.data.date_display,
     tags: matterResult.data.tags || [],
     published: matterResult.data.published !== false,
     content: contentHtml,

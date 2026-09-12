@@ -47,7 +47,7 @@ export async function generateMetadata({
       siteName: siteConfig.site.title,
       locale: "en_US",
       type: "article",
-      publishedTime: post.date,
+      publishedTime: /^\d{4}-\d{2}-\d{2}$/.test(post.date) ? post.date : undefined,
       authors: [authorName],
       tags: post.tags,
     },
@@ -95,8 +95,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
-    datePublished: post.date,
-    dateModified: post.date,
+    datePublished: /^\d{4}-\d{2}-\d{2}$/.test(post.date) ? post.date : undefined,
+    dateModified: /^\d{4}-\d{2}-\d{2}$/.test(post.date) ? post.date : undefined,
     author: {
       "@type": "Person",
       name: authorName,
@@ -131,11 +131,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <h1 className="text-4xl md:text-5xl font-bold mb-4">{post.title}</h1>
           <div className="flex flex-wrap items-center gap-3 text-muted-foreground mb-4">
             <time dateTime={post.date}>
-              {new Date(post.date).toLocaleDateString("en-US", {
+              {post.dateDisplay || new Date(post.date).toLocaleDateString("en-US", {
                 timeZone: "UTC",
                 year: "numeric",
                 month: "long",
-                day: "numeric",
+                day: /^\d{4}-\d{2}$/.test(post.date) ? undefined : "numeric",
               })}
             </time>
             {post.readingTime && (

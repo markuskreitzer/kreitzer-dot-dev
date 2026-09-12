@@ -1,0 +1,9 @@
+run,lower_C,upper_C_exclusive,samples,median_freq_high_Hz,median_freq_low_Hz
+cooling,-25,-20,1016,2366.0,283201.0
+cooling,-10,-5,133,2264.0,277586.0
+cooling,0,5,1040,2472.0,210108.0
+cooling,10,15,53,2684.0,210240.0
+warming,-25,-20,18,2386.0,282861.0
+warming,-10,-5,35,2206.0,278442.0
+warming,0,5,1749,2038.0,235030.0
+warming,10,15,324,2618.0,206044.0

@@ -1,0 +1,3 @@
+run,samples,fault_rows,duration_h,start_C,end_C,valid_min_C,valid_max_C
+January 2 cooling,3244,26,10.272800520555556,19.5,-25.75,-26.75,19.5
+January 3 warming,2724,19,8.626121719722223,-25.75,13.5,-25.75,13.75

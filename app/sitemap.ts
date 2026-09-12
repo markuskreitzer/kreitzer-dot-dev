@@ -13,7 +13,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     ...getAllPosts().map((post) => ({
       url: `${siteConfig.site.url}/blog/${post.slug}`,
-      lastModified: new Date(post.date),
+      lastModified: /^\d{4}-\d{2}-\d{2}$/.test(post.date)
+        ? new Date(post.date)
+        : undefined,
     })),
   ];
 }

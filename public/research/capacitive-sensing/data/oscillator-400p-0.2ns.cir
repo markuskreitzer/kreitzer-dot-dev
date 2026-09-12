@@ -1,0 +1,23 @@
+Ideal Schmitt RC oscillator
+.param R=3000 C=4e-10
+Vdd supply 0 3.3
+Rpull supply state 1k
+S1 state 0 cap 0 schmitt OFF
+.model schmitt SW(VT=1.35 VH=0.25 RON=0.001 ROFF=1e9)
+Ebuffer out 0 state 0 1
+Rtiming out cap {R}
+Csensor cap 0 {C} IC=0
+.options reltol=1e-5 abstol=1e-12 vntol=1e-7
+.tran 2e-10 20u 0 2e-10 UIC
+.control
+run
+meas tran t1 when v(cap)=1.35 rise=5
+meas tran t2 when v(cap)=1.35 rise=15
+let frequency=10/(t2-t1)
+print frequency
+set wr_singlescale
+set wr_vecnames
+wrdata data/spice-400p-0.2ns.csv v(cap) v(out)
+quit
+.endc
+.end
